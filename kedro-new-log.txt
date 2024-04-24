@@ -1,4 +1,8 @@
- kedro new
+kedro new
+[04/24/24 09:45:51] WARNING  C:\Users\Marcin\Documents\code\retina\.venv-retina\Lib\site-packages\kedro_viz\__init__.py:13:        warnings.py:110                             KedroVizPythonVersionWarning: Please be advised that Kedro Viz is not yet fully
+                                     compatible with the Python version you are currently using.
+                               warnings.warn(
+
 
 Project Name
 ============
@@ -32,14 +36,13 @@ To skip this step in the future use --example=y/n
 To find out more: https://docs.kedro.org/en/stable/starters/new_project_tools.html
 
 Would you like to include an example pipeline? :
- (no): yes
+ (no): no
 
 Congratulations!
 Your project 'retina' has been created in the directory
 C:\Users\Marcin\Documents\code\retina\retina\retina
 
 You have selected the following project tools: ['Linting', 'Testing', 'Custom Logging', 'Documentation', 'Data Structure', 'Kedro Viz']
-It has been created with an example pipeline.
 
 To skip the interactive flow you can run `kedro new` with
 kedro new --name=<your-project-name> --tools=<your-project-tools> --example=<yes/no>

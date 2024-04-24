@@ -1,0 +1,5 @@
+# parameters.yml
+valid_extensions: ['.jpg', '.png', '.jpeg']
+zipped_images_path: "./data/01_raw/retina databases.zip"
+extracted_images_path: "./data/01_raw"
+

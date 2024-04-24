@@ -38,7 +38,7 @@ package_name = "retina"
 project_name = "retina"
 kedro_init_version = "0.19.5"
 tools = ['Linting', 'Testing', 'Custom Logging', 'Documentation', 'Data Structure', 'Kedro Viz']
-example_pipeline = "True"
+example_pipeline = "False"
 source_dir = "src"
 
 [tool.pytest.ini_options]
