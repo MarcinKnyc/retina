@@ -80,21 +80,21 @@ def create_pipeline(**kwargs):
         [
             node(
                 func=unzip_folder,
-                inputs=["params:zipped_images_path", "params:extracted_images_path"],
+                inputs=["params:kaggle_zipped_images_path", "params:kaggle_extracted_images_path"],
                 outputs=None,
                 name="unzip_folder"
             ),
             node(
                 func=load_images_from_directory,
-                inputs=["params:extracted_images_path", "params:valid_extensions"],
+                inputs=["params:kaggle_extracted_images_path", "params:valid_extensions"],
                 outputs="loaded_images",
                 name="load_images"
             ),
-            node(
-                func=extract_example_pixel_by_pixel_feature_vectors,
-                inputs=["loaded_images"],
-                outputs="pix_by_pix_feature_vectors",
-                name="extract_example_pixel_by_pixel_feature_vectors"
-            )
+            # node(
+            #     func=extract_example_pixel_by_pixel_feature_vectors,
+            #     inputs=["loaded_images"],
+            #     outputs="pix_by_pix_feature_vectors",
+            #     name="extract_example_pixel_by_pixel_feature_vectors"
+            # )
         ]
     )
