@@ -2,3 +2,7 @@
 loaded_images:
   type: pickle.PickleDataset
   filepath: data/08_reporting/images.pkl
+
+pix_by_pix_feature_vectors:
+  type: pickle.PickleDataset
+  filepath: data/08_reporting/feature_vectors.pkl
