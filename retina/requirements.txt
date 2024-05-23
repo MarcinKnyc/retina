@@ -11,3 +11,6 @@ pytest-cov~=3.0
 pytest-mock>=1.7.1, <2.0
 ruff~=0.1.8
 opencv-python-headless
+tqdm
+scikit-image
+
