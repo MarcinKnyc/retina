@@ -4,4 +4,6 @@ example_zipped_images_path: "./data/01_raw/retina databases.zip"
 example_extracted_images_path: "./data/01_raw"
 kaggle_zipped_images_path: "./data/01_raw/Retina Blood Vessel Segmentation kaggle.zip"
 kaggle_extracted_images_path: "./data/01_raw"
+kaggle_path_to_rename: "./data/01_raw/Data"
+kaggle_rename_path_to: "./data/01_raw/Retina Blood Vessel Segmentation kaggle"
 

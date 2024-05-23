@@ -30,6 +30,30 @@ def load_images_from_directory(extracted_images_path: str, valid_extensions: Lis
     
     return images
 
+def rename_folder(old_path: str, new_path: str) -> None:
+    """
+    Renames a folder from old_path to new_path.
+
+    Parameters:
+    old_path (str): The current path of the folder.
+    new_path (str): The new path of the folder.
+
+    Returns:
+    None
+    """
+    try:
+        os.rename(old_path, new_path)
+        print(f"Folder renamed from '{old_path}' to '{new_path}' successfully.")
+    except FileNotFoundError:
+        print(f"The folder at '{old_path}' does not exist.")
+    except FileExistsError:
+        print(f"A folder already exists at the new path '{new_path}'.")
+    except PermissionError:
+        print(f"Permission denied to rename the folder.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
 def extract_example_pixel_by_pixel_feature_vectors(images: List) -> List[np.ndarray]:
     feature_vectors = []
     
@@ -83,6 +107,12 @@ def create_pipeline(**kwargs):
                 inputs=["params:kaggle_zipped_images_path", "params:kaggle_extracted_images_path"],
                 outputs=None,
                 name="unzip_folder"
+            ),
+            node(
+                func=rename_folder,
+                inputs=["params:kaggle_path_to_rename", "params:kaggle_rename_path_to"],
+                outputs=None,
+                name="rename_unzipped_folder"
             ),
             node(
                 func=load_images_from_directory,
