@@ -7,3 +7,15 @@ kaggle_extracted_images_path: "./data/01_raw"
 kaggle_path_to_rename: "./data/01_raw/Data"
 kaggle_rename_path_to: "./data/01_raw/Retina Blood Vessel Segmentation kaggle"
 
+
+
+# vessel_segmentation pipeline:
+input_path: './data/01_raw/Retina Blood Vessel Segmentation kaggle/'
+output_path: './data/02_intermediate/'
+image_plot_title: 'Image and Mask'
+image_plot_filename: 'image_and_mask.png'
+dataset_size: 5
+dataset_step: 5
+result_plot_title: 'Ground truth and predicted mask'
+result_plot_filename: 'results.png'
+
