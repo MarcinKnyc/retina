@@ -9,40 +9,40 @@ pix_by_pix_feature_vectors:
 
 
 # vessel_segmentation pipeline:
-# train_raw_photos:
-#   type: pickle.PickleDataset
+train_raw_photos:
+  type: pickle.PickleDataset
 
-# train_masks:
-#   type: pickle.PickleDataset
+train_masks:
+  type: pickle.PickleDataset
 
-# test_raw_photos:
-#   type: pickle.PickleDataset
+test_raw_photos:
+  type: pickle.PickleDataset
 
-# test_masks:
-#   type: pickle.PickleDataset
+test_masks:
+  type: pickle.PickleDataset
 
-# train_photos:
-#   type: pickle.PickleDataset
+train_photos:
+  type: pickle.PickleDataset
 
-# test_photos:
-#   type: pickle.PickleDataset
+test_photos:
+  type: pickle.PickleDataset
 
-# train_features:
-#   type: pickle.PickleDataset
+train_features:
+  type: pickle.PickleDataset
 
-# train_labels:
-#   type: pickle.PickleDataset
+train_labels:
+  type: pickle.PickleDataset
 
-# train_features_under:
-#   type: pickle.PickleDataset
+train_features_under:
+  type: pickle.PickleDataset
 
-# train_labels_under:
-#   type: pickle.PickleDataset
+train_labels_under:
+  type: pickle.PickleDataset
 
 # knn_classifier:
 #   type: pickle.PickleDataset
 #   filepath: data/06_models/feature_vectors.pkl
 
-# y_pred_images:
-#   type: pickle.PickleDataset
+y_pred_images:
+  type: pickle.PickleDataset
 

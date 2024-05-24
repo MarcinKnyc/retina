@@ -2,10 +2,10 @@
 
 from kedro.pipeline import Pipeline, node
 
-from retina.retina.src.retina.pipelines.vessel_segmentation.feature_extraction import create_dataset, preprocess_images
-from retina.retina.src.retina.pipelines.vessel_segmentation.loading import load_data
-from retina.retina.src.retina.pipelines.vessel_segmentation.models_and_predictions import predict_model, train_model, undersampling
-from retina.retina.src.retina.pipelines.vessel_segmentation.visualisation import plot_images, plot_results
+from .feature_extraction import create_dataset, preprocess_images
+from .loading import load_data
+from .models_and_predictions import predict_model, train_model, undersampling
+from .visualisation import plot_images, plot_results
 
 def create_pipeline(**kwargs):
     return Pipeline(

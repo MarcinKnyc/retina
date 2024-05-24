@@ -1,6 +1,8 @@
 import os
 import matplotlib.pyplot as plt
 
+from .metrics import get_quality
+
 def plot_images(train_raw_photos, train_masks, title: str, output_path: str, filename: str, figsize=(20, 10), cmap=None):
     """Plots images in a grid layout and saves the plot to a file."""
     images_set = [train_raw_photos[:5], train_masks[:5]]
