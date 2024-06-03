@@ -1,5 +1,9 @@
 # retina
 
+## Python version
+
+`Python 3.12` is required.
+
 ## Data download
 
 Use <https://www.kaggle.com/datasets/abdallahwagih/retina-blood-vessel>, download the zip into `retina/data/01_raw/` as `Retina Blood Vessel Segmentation kaggle.zip`.
