@@ -1,9 +1,15 @@
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 from .metrics import get_quality
 
-def plot_images(train_raw_photos, train_masks, title: str, output_path: str, filename: str, figsize=(20, 10), cmap=None):
+def normalize(img):
+    if img.max() > 1.0:  # Normalize if max value is greater than 1
+        img /= 255.0
+    return img
+
+def plot_images(train_raw_photos, train_masks, title: str, output_path: str, filename: str, figsize=(20, 10), cmap='gray'):
     """Plots images in a grid layout and saves the plot to a file."""
     images_set = [train_raw_photos[:5], train_masks[:5]]
     plt.figure(figsize=figsize)
@@ -11,7 +17,8 @@ def plot_images(train_raw_photos, train_masks, title: str, output_path: str, fil
     for i in range(len(images_set[0])):
         for j in range(len(images_set)):
             plt.subplot(len(images_set), len(images_set[0]), i + j * len(images_set[0]) + 1)
-            plt.imshow(images_set[j][i], cmap=cmap)
+            img = normalize(images_set[j][i].astype(np.float32))
+            plt.imshow(img, cmap=cmap)
             plt.axis('off')
         plt.tight_layout()
     save_plot(output_path, filename)
@@ -28,15 +35,18 @@ def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, result_
     plt.suptitle(result_plot_title, fontsize=20)
     for i in range(n):
         plt.subplot(3, 10, i + 1)
-        plt.imshow(test_raw_photos[i], cmap='gray')
+        img = normalize( test_raw_photos[i].astype(np.float32))
+        plt.imshow(img, cmap='gray')
         plt.axis('off')
         plt.title('Photo')
         plt.subplot(3, 10, i + 11)
-        plt.imshow(test_masks[i], cmap='gray')
+        mask = normalize( test_masks[i].astype(np.float32))
+        plt.imshow(mask, cmap='gray')
         plt.axis('off')
         plt.title('Ground truth')
         plt.subplot(3, 10, i + 21)
-        plt.imshow(y_pred_images[i], cmap='gray')
+        pred = normalize( y_pred_images[i].astype(np.float32))
+        plt.imshow(pred, cmap='gray')
         plt.axis('off')
         plt.title('Mask\nAcc: {:.3f}\nSens: {:.3f}\nSpec: {:.3f}'.format(accuracy_scores[i], sensitivity_scores[i], specificity_scores[i]))
         plt.tight_layout()
