@@ -2,6 +2,8 @@
 
 from kedro.pipeline import Pipeline, node
 
+from .unzip import rename_folder, unzip_folder
+
 from .feature_extraction import create_dataset, preprocess_images
 from .loading import load_data
 from .models_and_predictions import predict_model, train_model, undersampling
@@ -11,8 +13,20 @@ def create_pipeline(**kwargs):
     return Pipeline(
         [
             node(
+                func=unzip_folder,
+                inputs=["params:kaggle_zipped_images_path", "params:kaggle_extracted_images_path"],
+                outputs=None,
+                name="unzip_folder"
+            ),
+            node(
+                func=rename_folder,
+                inputs=["params:kaggle_path_to_rename", "params:kaggle_rename_path_to"],
+                outputs=None,
+                name="rename_unzipped_folder"
+            ),
+            node(
                 func=load_data,
-                inputs="params:input_path",
+                inputs=["params:input_path", "params:debug"],
                 outputs=["train_raw_photos", "train_masks", "test_raw_photos", "test_masks"],
                 name="load_data_node",
             ),

@@ -1,7 +1,4 @@
 # parameters.yml
-valid_extensions: ['.jpg', '.png', '.jpeg']
-example_zipped_images_path: "./data/01_raw/retina databases.zip"
-example_extracted_images_path: "./data/01_raw"
 kaggle_zipped_images_path: "./data/01_raw/Retina Blood Vessel Segmentation kaggle.zip"
 kaggle_extracted_images_path: "./data/01_raw"
 kaggle_path_to_rename: "./data/01_raw/Data"
@@ -18,4 +15,5 @@ dataset_size: 5
 dataset_step: 5
 result_plot_title: 'Ground truth and predicted mask'
 result_plot_filename: 'results.png'
+debug: True
 

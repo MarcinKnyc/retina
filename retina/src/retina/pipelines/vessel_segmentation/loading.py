@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 
-def load_data(input_path: str) -> tuple:
+def load_data(input_path: str, debug: bool) -> tuple:
     """Loads and preprocesses the train and test datasets."""
     train_photo_paths = [os.path.join(input_path, 'train/image', x) for x in os.listdir(os.path.join(input_path, 'train/image'))]
     train_label_paths = [os.path.join(input_path, 'train/mask', x) for x in os.listdir(os.path.join(input_path, 'train/mask'))]
@@ -20,4 +20,10 @@ def load_data(input_path: str) -> tuple:
     test_masks = np.array(test_masks).astype(np.uint8)
     test_masks = [np.where(mask > 0, 255, 0) for mask in test_masks]
 
+    if debug:
+        return train_raw_photos[:5], train_masks[:5], test_raw_photos[:5], test_masks[:5]
+    
     return train_raw_photos, train_masks, test_raw_photos, test_masks
+
+
+    
