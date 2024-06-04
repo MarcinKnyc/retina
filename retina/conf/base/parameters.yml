@@ -9,6 +9,10 @@ stare_labels_url: "https://cecas.clemson.edu/~ahoover/stare/probing/labels-ah.ta
 # drive:
 drive_path: "DRIVE/"
 
+# chasedb1:
+chasedb1_path: "CHASEDB1/"
+chasedb1_url: https://researchdata.kingston.ac.uk/96/1/CHASEDB1.zip
+
 # vessel_segmentation pipeline:
 input_path: "./data/01_raw/DRIVE/"
 output_path: "./data/02_intermediate/"

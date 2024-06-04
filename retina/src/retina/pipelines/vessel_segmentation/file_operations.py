@@ -32,9 +32,9 @@ def rename_folder(old_path: str, new_path: str) -> None:
         print(f"An error occurred: {e}")
 
 
-def unzip_folder(zipped_images_path: str, extracted_images_path: str):
-    with zipfile.ZipFile(zipped_images_path, 'r') as zip_ref:
-        zip_ref.extractall(extracted_images_path)
+def unzip(url: str, output: str):
+    with zipfile.ZipFile(url, 'r') as zip_ref:
+        zip_ref.extractall(output)
 
 
 def untar(input: str, output: str) -> None:
@@ -54,13 +54,13 @@ def ungz(path: str) -> None:
                     shutil.copyfileobj(f_in, f_out)
 
 
-def split_data(input: str, output: str, output2: str) -> None:
-    files = os.listdir(input)
-    for file in files[:len(files)//2]:
-        os.rename(input + "/" + file, output + "/" + file)
+def split_data(input: str, output: str, output2: str, amount: int) -> None:
+    for i, file in enumerate(os.listdir(input)):
+        if i >= amount:
+            break
+        shutil.copy(input + "/" + file, output + "/" + file)
     for file in os.listdir(input):
-        os.rename(input + "/" + file, output2 + "/" + file)
-    shutil.rmtree(input)
+        shutil.copy(input + "/" + file, output2 + "/" + file)
 
 
 def format2png(path: str, format: str) -> None:

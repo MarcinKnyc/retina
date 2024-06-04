@@ -10,6 +10,8 @@ DRIVE: Download <https://www.kaggle.com/datasets/zionfuo/drive2004>, and save it
 
 STARE: Downloaded automagically.
 
+CHASEDB1: Downloaded automagically.
+
 ## Usage
 
 `kedro run --runner=SequentialRunner`

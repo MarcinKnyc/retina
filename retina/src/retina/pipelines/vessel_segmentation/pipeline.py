@@ -5,7 +5,7 @@ from .loading import load_data
 from .models_and_predictions import predict_model, train_adaboost, train_knn, train_logitboost, undersampling
 from .visualisation import plot_images, plot_results
 
-from .prepare import prepare_stare, prepare_drive
+from .prepare import prepare_stare, prepare_drive,  prepare_chasedb1
 
 
 def create_pipeline(**kwargs):
@@ -20,12 +20,21 @@ def create_pipeline(**kwargs):
                 outputs="sequence",  # TODO: use this to force execution before other nodes
                 name="STARE"
             ),
-            node(func=prepare_drive,
-                 inputs=["params:datapath",
-                         "params:drive_path"],
-                 outputs="sequence2",  # TODO: use this to force execution before other nodes
-                 name="DRIVE"
-                 ),
+            node(
+                func=prepare_drive,
+                inputs=["params:datapath",
+                        "params:drive_path"],
+                outputs="sequence2",  # TODO: use this to force execution before other nodes
+                name="DRIVE"
+            ),
+            node(
+                func=prepare_chasedb1,
+                inputs=["params:chasedb1_url",
+                        "params:datapath",
+                        "params:chasedb1_path"],
+                outputs="sequence3",  # TODO: use this to force execution before other nodes
+                name="CHASEDB1"
+            ),
             node(
                 func=load_data,
                 # inputs=["params:kaggle_rename_path_to",

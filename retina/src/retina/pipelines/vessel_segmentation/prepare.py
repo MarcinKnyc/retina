@@ -1,40 +1,52 @@
 import os
+import glob
 from urllib.request import urlretrieve as download
 from shutil import rmtree
-from .file_operations import untar, ungz, rename_all, split_data, format2png, clean_format, unzip_folder
+from .file_operations import untar, ungz, rename_all, split_data, format2png, clean_format, unzip
 
 
-def get(url: str, path: str, name: str) -> None:
-    tar = path + "tar.tar"
+def make_paths(path: str):
+    os.makedirs(path)
+    os.makedirs(path + "train/image")
+    os.makedirs(path + "train/mask")
+    os.makedirs(path + "test/image")
+    os.makedirs(path + "test/mask")
 
-    try:
-        download(url, tar)
-    except IOError:
-        raise IOError()
 
-    extracted = path + "extracted"
-
-    untar(tar, extracted)
-    os.remove(tar)
-
-    ungz(extracted)
-
-    for item in os.listdir(extracted):
-        if item.endswith(".gz"):
-            os.remove(extracted + "/" + item)
-
-    os.rename(extracted, path + name)
+def split(path: str, src: str, amount: int) -> None:
+    split_data(path + src,
+               path + 'train/image',
+               path + 'test/image', amount)
+    split_data(path + 'mask',
+               path + 'train/mask',
+               path + 'test/mask', amount)
+    rmtree(path + src)
+    rmtree(path + 'mask')
 
 
 def prepare_stare(stare_images_url: str, stare_labels_url: str, datapath: str, name: str) -> int:
-    path = datapath + name
-    def make_paths(path: str):
-        os.makedirs(path)
-        os.makedirs(path + "train/image")
-        os.makedirs(path + "train/mask")
-        os.makedirs(path + "test/image")
-        os.makedirs(path + "test/mask")
+    def get(url: str, path: str, name: str) -> None:
+        tar = path + "tar.tar"
 
+        try:
+            download(url, tar)
+        except IOError:
+            raise IOError()
+
+        extracted = path + "extracted"
+
+        untar(tar, extracted)
+        os.remove(tar)
+
+        ungz(extracted)
+
+        for item in os.listdir(extracted):
+            if item.endswith(".gz"):
+                os.remove(extracted + "/" + item)
+
+        os.rename(extracted, path + name)
+
+    path = datapath + name
     if os.path.exists(path):
         return 0
 
@@ -43,8 +55,7 @@ def prepare_stare(stare_images_url: str, stare_labels_url: str, datapath: str, n
     get(stare_images_url, path, "image")
     get(stare_labels_url, path, "mask")
 
-    split_data(path + 'image', path + 'train/image', path + 'test/image')
-    split_data(path + 'mask', path + 'train/mask', path + 'test/mask')
+    split(path, 'image', len(os.listdir(path + 'image')))
 
     format2png(path, "ppm")
     clean_format(path, "ppm")
@@ -59,7 +70,7 @@ def prepare_drive(datapath: str, name: str) -> int:
     if os.path.exists(path):
         return 0
 
-    unzip_folder(path[:-1] + ".zip", datapath)
+    unzip(path[:-1] + ".zip", datapath)
 
     os.makedirs(path + "train")
 
@@ -79,6 +90,59 @@ def prepare_drive(datapath: str, name: str) -> int:
     format2png(path, "gif")
     clean_format(path, "tif")
     clean_format(path, "gif")
+
+    rename_all(path)
+
+    return 0
+
+
+def prepare_chasedb1(url: str, datapath: str, name: str) -> int:
+    def get(url: str, path: str, name: str) -> None:
+        zip = path + "zip.zip"
+
+        try:
+            download(url, zip)
+        except IOError:
+            raise IOError()
+
+        extracted = path + "extracted"
+
+        unzip(zip, extracted)
+        os.remove(zip)
+
+        os.rename(extracted, path + name)
+
+    path = datapath + name
+    if os.path.exists(path):
+        return 0
+
+    make_paths(path)
+
+    get(url, path, "data")
+
+    for filepath in glob.iglob(path + "/**/*_2ndHO.*", recursive=True):
+        os.remove(filepath)
+
+    format2png(path, "jpg")
+    clean_format(path, "jpg")
+
+    os.makedirs(path + "mask")
+    for filepath in glob.iglob(path + "**/*_1stHO.*", recursive=True):
+        os.rename(filepath, path + "mask/" +
+                  filepath.replace("\\", "/").split("/")[-1])
+
+    amount = 8
+    split(path, 'data', amount)
+    p = path + "test/image"
+    for i, file in enumerate(os.listdir(p)):
+        if i >= amount:
+            break
+        os.remove(p + "/" + file)
+    p = path + "test/mask"
+    for i, file in enumerate(os.listdir(p)):
+        if i >= amount:
+            break
+        os.remove(p + "/" + file)
 
     rename_all(path)
 
