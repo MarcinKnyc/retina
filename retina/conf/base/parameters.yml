@@ -2,7 +2,7 @@
 datapath: "./data/01_raw/"
 
 # stare:
-stare_path: "./data/01_raw/STARE/"
+stare_path: "STARE/"
 stare_images_url: "https://cecas.clemson.edu/~ahoover/stare/probing/stare-images.tar"
 stare_labels_url: "https://cecas.clemson.edu/~ahoover/stare/probing/labels-ah.tar"
 

@@ -15,6 +15,7 @@ def create_pipeline(**kwargs):
                 func=prepare_stare,
                 inputs=["params:stare_images_url",
                         "params:stare_labels_url",
+                        "params:datapath",
                         "params:stare_path"],
                 outputs="sequence",  # TODO: use this to force execution before other nodes
                 name="STARE"
@@ -28,7 +29,7 @@ def create_pipeline(**kwargs):
             node(
                 func=load_data,
                 # inputs=["params:kaggle_rename_path_to",
-                inputs=["params:stare_path",
+                inputs=["params:input_path",
                         "params:debug"],
                 outputs=["train_raw_photos",
                          "train_masks",
