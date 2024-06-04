@@ -3,6 +3,7 @@ import glob
 from urllib.request import urlretrieve as download
 from shutil import rmtree
 from .file_operations import untar, ungz, rename_all, split_data, format2png, clean_format, unzip
+from .loading import load_data
 
 
 def make_paths(path: str):
@@ -24,7 +25,7 @@ def split(path: str, src: str, amount: int) -> None:
     rmtree(path + 'mask')
 
 
-def prepare_stare(stare_images_url: str, stare_labels_url: str, datapath: str, name: str) -> int:
+def prepare_stare(path: str, stare_images_url: str, stare_labels_url: str, debug: bool) -> tuple:
     def get(url: str, path: str, name: str) -> None:
         tar = path + "tar.tar"
 
@@ -46,9 +47,8 @@ def prepare_stare(stare_images_url: str, stare_labels_url: str, datapath: str, n
 
         os.rename(extracted, path + name)
 
-    path = datapath + name
     if os.path.exists(path):
-        return 0
+        return load_data(path, debug)
 
     make_paths(path)
 
@@ -62,15 +62,14 @@ def prepare_stare(stare_images_url: str, stare_labels_url: str, datapath: str, n
 
     rename_all(path)
 
-    return 0
+    return load_data(path, debug)
 
 
-def prepare_drive(datapath: str, name: str) -> int:
-    path = datapath + name
+def prepare_drive(path: str, debug: bool) -> tuple:
     if os.path.exists(path):
-        return 0
+        return load_data(path, debug)
 
-    unzip(path[:-1] + ".zip", datapath)
+    unzip(path[:-1] + ".zip", "DRIVE")
 
     os.makedirs(path + "train")
 
@@ -93,10 +92,10 @@ def prepare_drive(datapath: str, name: str) -> int:
 
     rename_all(path)
 
-    return 0
+    return load_data(path, debug)
 
 
-def prepare_chasedb1(url: str, datapath: str, name: str) -> int:
+def prepare_chasedb1(path: str, url: str, debug: bool) -> tuple:
     def get(url: str, path: str, name: str) -> None:
         zip = path + "zip.zip"
 
@@ -112,9 +111,8 @@ def prepare_chasedb1(url: str, datapath: str, name: str) -> int:
 
         os.rename(extracted, path + name)
 
-    path = datapath + name
     if os.path.exists(path):
-        return 0
+        return load_data(path, debug)
 
     make_paths(path)
 
@@ -146,4 +144,4 @@ def prepare_chasedb1(url: str, datapath: str, name: str) -> int:
 
     rename_all(path)
 
-    return 0
+    return load_data(path, debug)

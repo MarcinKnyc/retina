@@ -1,110 +1,242 @@
 from kedro.pipeline import Pipeline, node
 
 from .feature_extraction import create_dataset, preprocess_images
-from .loading import load_data
 from .models_and_predictions import predict_model, train_adaboost, train_knn, train_logitboost, undersampling
 from .visualisation import plot_images, plot_results
 
-from .prepare import prepare_stare, prepare_drive,  prepare_chasedb1
+from .prepare import prepare_stare, prepare_drive, prepare_chasedb1
 
 
 def create_pipeline(**kwargs):
-    return Pipeline(
+    stare_pipeline = Pipeline(
         [
             node(
                 func=prepare_stare,
-                inputs=["params:stare_images_url",
+                inputs=["params:stare_path",
+                        "params:stare_images_url",
                         "params:stare_labels_url",
-                        "params:datapath",
-                        "params:stare_path"],
-                outputs="sequence",  # TODO: use this to force execution before other nodes
+                        "params:debug"],
+                outputs=["STARE_train_raw_photos",
+                         "STARE_train_masks",
+                         "STARE_test_raw_photos",
+                         "STARE_test_masks"],
                 name="STARE"
             ),
             node(
-                func=prepare_drive,
-                inputs=["params:datapath",
-                        "params:drive_path"],
-                outputs="sequence2",  # TODO: use this to force execution before other nodes
-                name="DRIVE"
-            ),
-            node(
-                func=prepare_chasedb1,
-                inputs=["params:chasedb1_url",
-                        "params:datapath",
-                        "params:chasedb1_path"],
-                outputs="sequence3",  # TODO: use this to force execution before other nodes
-                name="CHASEDB1"
-            ),
-            node(
-                func=load_data,
-                # inputs=["params:kaggle_rename_path_to",
-                inputs=["params:input_path",
-                        "params:debug"],
-                outputs=["train_raw_photos",
-                         "train_masks",
-                         "test_raw_photos",
-                         "test_masks"],
-                name="load_data_node",
-            ),
-            node(
                 func=preprocess_images,
-                inputs=["train_raw_photos",
-                        "test_raw_photos"],
-                outputs=["train_photos",
-                         "test_photos"],
-                name="preprocess_images_node",
+                inputs=["STARE_train_raw_photos",
+                        "STARE_test_raw_photos"],
+                outputs=["STARE_train_photos",
+                         "STARE_test_photos"],
+                name="preprocess_STARE",
             ),
             node(
                 func=plot_images,
-                inputs=["train_raw_photos",
-                        "train_masks",
-                        "params:image_plot_title",
-                        "params:output_path",
-                        "params:image_plot_filename"],
+                inputs=["STARE_train_raw_photos",
+                        "STARE_train_masks",
+                        "params:stare_image_plot_title",
+                        "params:stare_output_path",
+                        "params:stare_image_plot_filename"],
                 outputs=None,
-                name="plot_images_node",
+                name="plot_STARE",
             ),
             node(
                 func=create_dataset,
-                inputs=["train_photos",
-                        "train_masks"],
-                outputs=["train_features",
-                         "train_labels"],
-                name="create_dataset_node",
+                inputs=["STARE_train_photos",
+                        "STARE_train_masks"],
+                outputs=["STARE_train_features",
+                         "STARE_train_labels"],
+                name="STARE_dataset",
             ),
             node(
                 func=undersampling,
-                inputs=["train_features", "train_labels"],
-                outputs=["train_features_under",
-                         "train_labels_under"],
-                name="undersampling_node",
+                inputs=["STARE_train_features",
+                        "STARE_train_labels"],
+                outputs=["STARE_train_features_under",
+                         "STARE_train_labels_under"],
+                name="STARE_undersampling",
             ),
             node(
-                func=train_logitboost,
-                inputs=["train_features_under",
-                        "train_labels_under",
-                        "params:output_path"],
-                outputs="knn_classifier",
-                name="train_model_node",
+                func=train_knn,
+                inputs=["STARE_train_features_under",
+                        "STARE_train_labels_under",
+                        "params:stare_output_path"],
+                outputs="STARE_knn_classifier",
+                name="STARE_train",
             ),
             node(
                 func=predict_model,
-                inputs=["knn_classifier",
-                        "test_photos",
-                        "test_masks"],
-                outputs="y_pred_images",
-                name="predict_model_node",
+                inputs=["STARE_knn_classifier",
+                        "STARE_test_photos",
+                        "STARE_test_masks"],
+                outputs="STARE_pred_images",
+                name="STARE_predict_model",
             ),
             node(
                 func=plot_results,
-                inputs=["test_photos",
-                        "test_masks",
-                        "y_pred_images",
-                        "params:result_plot_title",
-                        "params:output_path",
-                        "params:result_plot_filename"],
+                inputs=["STARE_test_photos",
+                        "STARE_test_masks",
+                        "STARE_pred_images",
+                        "params:stare_result_plot_title",
+                        "params:stare_output_path",
+                        "params:stare_result_plot_filename"],
                 outputs=None,
-                name="plot_results_node",
+                name="STARE_plot_results",
             ),
         ]
     )
+
+    drive_pipeline = Pipeline(
+        [
+            node(
+                func=prepare_drive,
+                inputs=["params:drive_path",
+                        "params:debug"],
+                outputs=["DRIVE_train_raw_photos",
+                         "DRIVE_train_masks",
+                         "DRIVE_test_raw_photos",
+                         "DRIVE_test_masks"],
+                name="DRIVE"
+            ),
+            node(
+                func=preprocess_images,
+                inputs=["DRIVE_train_raw_photos",
+                        "DRIVE_test_raw_photos"],
+                outputs=["DRIVE_train_photos",
+                         "DRIVE_test_photos"],
+                name="preprocess_DRIVE",
+            ),
+            node(
+                func=plot_images,
+                inputs=["DRIVE_train_raw_photos",
+                        "DRIVE_train_masks",
+                        "params:drive_image_plot_title",
+                        "params:drive_output_path",
+                        "params:drive_image_plot_filename"],
+                outputs=None,
+                name="plot_DRIVE",
+            ),
+            node(
+                func=create_dataset,
+                inputs=["DRIVE_train_photos",
+                        "DRIVE_train_masks"],
+                outputs=["DRIVE_train_features",
+                         "DRIVE_train_labels"],
+                name="DRIVE_dataset",
+            ),
+            node(
+                func=undersampling,
+                inputs=["DRIVE_train_features",
+                        "DRIVE_train_labels"],
+                outputs=["DRIVE_train_features_under",
+                         "DRIVE_train_labels_under"],
+                name="DRIVE_undersampling",
+            ),
+            node(
+                func=train_knn,
+                inputs=["DRIVE_train_features_under",
+                        "DRIVE_train_labels_under",
+                        "params:drive_output_path"],
+                outputs="DRIVE_knn_classifier",
+                name="DRIVE_train",
+            ),
+            node(
+                func=predict_model,
+                inputs=["DRIVE_knn_classifier",
+                        "DRIVE_test_photos",
+                        "DRIVE_test_masks"],
+                outputs="DRIVE_pred_images",
+                name="DRIVE_predict_model",
+            ),
+            node(
+                func=plot_results,
+                inputs=["DRIVE_test_photos",
+                        "DRIVE_test_masks",
+                        "DRIVE_pred_images",
+                        "params:drive_result_plot_title",
+                        "params:drive_output_path",
+                        "params:drive_result_plot_filename"],
+                outputs=None,
+                name="DRIVE_plot_results",
+            ),
+        ]
+    )
+
+    chasedb1_pipeline = Pipeline(
+        [
+            node(
+                func=prepare_chasedb1,
+                inputs=["params:chasedb1_path",
+                        "params:chasedb1_url",
+                        "params:debug"],
+                outputs=["CHASEDB1_train_raw_photos",
+                         "CHASEDB1_train_masks",
+                         "CHASEDB1_test_raw_photos",
+                         "CHASEDB1_test_masks"],
+                name="CHASEDB1"
+            ),
+            node(
+                func=preprocess_images,
+                inputs=["CHASEDB1_train_raw_photos",
+                        "CHASEDB1_test_raw_photos"],
+                outputs=["CHASEDB1_train_photos",
+                         "CHASEDB1_test_photos"],
+                name="preprocess_CHASEDB1",
+            ),
+            node(
+                func=plot_images,
+                inputs=["CHASEDB1_train_raw_photos",
+                        "CHASEDB1_train_masks",
+                        "params:chasedb1_image_plot_title",
+                        "params:chasedb1_output_path",
+                        "params:chasedb1_image_plot_filename"],
+                outputs=None,
+                name="plot_CHASEDB1",
+            ),
+            node(
+                func=create_dataset,
+                inputs=["CHASEDB1_train_photos",
+                        "CHASEDB1_train_masks"],
+                outputs=["CHASEDB1_train_features",
+                         "CHASEDB1_train_labels"],
+                name="CHASEDB1_dataset",
+            ),
+            node(
+                func=undersampling,
+                inputs=["CHASEDB1_train_features",
+                        "CHASEDB1_train_labels"],
+                outputs=["CHASEDB1_train_features_under",
+                         "CHASEDB1_train_labels_under"],
+                name="CHASEDB1_undersampling",
+            ),
+            node(
+                func=train_knn,
+                inputs=["CHASEDB1_train_features_under",
+                        "CHASEDB1_train_labels_under",
+                        "params:chasedb1_output_path"],
+                outputs="CHASEDB1_knn_classifier",
+                name="CHASEDB1_train",
+            ),
+            node(
+                func=predict_model,
+                inputs=["CHASEDB1_knn_classifier",
+                        "CHASEDB1_test_photos",
+                        "CHASEDB1_test_masks"],
+                outputs="CHASEDB1_pred_images",
+                name="CHASEDB1_predict_model",
+            ),
+            node(
+                func=plot_results,
+                inputs=["CHASEDB1_test_photos",
+                        "CHASEDB1_test_masks",
+                        "CHASEDB1_pred_images",
+                        "params:chasedb1_result_plot_title",
+                        "params:chasedb1_output_path",
+                        "params:chasedb1_result_plot_filename"],
+                outputs=None,
+                name="CHASEDB1_plot_results",
+            ),
+        ]
+    )
+
+    return stare_pipeline + drive_pipeline + chasedb1_pipeline
