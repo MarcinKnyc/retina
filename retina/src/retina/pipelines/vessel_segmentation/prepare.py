@@ -68,7 +68,7 @@ def prepare_drive(path: str, debug: bool) -> tuple:
     if os.path.exists(path):
         return load_data(path, debug)
 
-    unzip(path[:-1] + ".zip", "DRIVE")
+    unzip(path[:-1] + ".zip", path.replace("\\", "/")[:-1].rsplit('/', 1)[0])
 
     os.makedirs(path + "train")
 

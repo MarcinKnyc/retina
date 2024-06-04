@@ -72,8 +72,8 @@ def rename_folder(old_path: str, new_path: str) -> None:
         print(f"An error occurred: {e}")
 
 
-def unzip(url: str, output: str):
-    with zipfile.ZipFile(url, 'r') as zip_ref:
+def unzip(file: str, output: str):
+    with zipfile.ZipFile(file, 'r') as zip_ref:
         zip_ref.extractall(output)
 
 
