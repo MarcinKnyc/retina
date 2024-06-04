@@ -5,18 +5,36 @@ from sklearn.ensemble import AdaBoostClassifier
 from logitboost import LogitBoost
 from sklearn.tree import DecisionTreeRegressor
 from .feature_extraction import create_dataset
+import code
 
-def undersampling(photos: list, masks: list) -> tuple:
+def undersampling(train_features: list, train_labels: list) -> tuple:
     """Balances the dataset by undersampling the majority class."""
-    # photos_0 = [photos[i] for i in range(len(masks)) if masks[i] == 0]
-    # photos_225 = [photos[i] for i in range(len(masks)) if masks[i] == 255]
+    features = np.array(train_features)
+    labels = np.array( train_labels)
 
-    # np.random.shuffle(photos_0)
-    # photos_0 = photos_0[:len(photos_225)]
-    # photos = photos_0 + photos_225
-    # masks = [0] * len(photos_0) + [255] * len(photos_225)
+    features_0 = features[ labels == 0 ]
+    features_255 = features[labels == 255 ]
 
-    return photos, masks
+    minority = features_255
+    majority = features_0
+    minority_val = 255
+    majority_val = 0
+
+    if len(features_0) < len(features_255):
+        minority = features_0
+        majority = features_255
+        majority_val = 255
+        minority_val = 0
+
+    l = len(minority)
+    np.random.shuffle(majority)
+    majority = majority[:l] 
+    shuffle_pattern =  [i for i in range(2*l)]
+    np.random.shuffle(shuffle_pattern)
+    features = np.concatenate( [minority, majority] )[shuffle_pattern]
+    labels = np.array([minority_val] * l + [majority_val] * l)[shuffle_pattern]
+
+    return features, labels
 
 
 def train_knn(train_features: np.ndarray, train_labels: np.ndarray, output_path: str) -> KNeighborsClassifier:
@@ -29,7 +47,7 @@ def train_knn(train_features: np.ndarray, train_labels: np.ndarray, output_path:
     
 def train_logitboost(train_features: np.ndarray, train_labels: np.ndarray, output_path: str) -> LogitBoost:
     """Trains a LogitBoost classifier"""
-    logitboost_classifier = LogitBoost( n_estimators= 200)
+    logitboost_classifier = LogitBoost(estimator=DecisionTreeRegressor(max_depth=1), n_estimators= 200)
     logitboost_classifier.fit(train_features, train_labels)
 
     return logitboost_classifier
