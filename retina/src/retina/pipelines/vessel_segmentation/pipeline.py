@@ -4,7 +4,7 @@ from .unzip import rename_folder, unzip_folder
 
 from .feature_extraction import create_dataset, preprocess_images
 from .loading import load_data
-from .models_and_predictions import predict_model, train_model, undersampling
+from .models_and_predictions import predict_model, train_adaboost, train_knn, train_logitboost, undersampling
 from .visualisation import plot_images, plot_results
 
 from .prepare import prepare_stare
@@ -80,7 +80,7 @@ def create_pipeline(**kwargs):
                 name="undersampling_node",
             ),
             node(
-                func=train_model,
+                func=train_logitboost,
                 inputs=["train_features_under",
                         "train_labels_under",
                         "params:output_path"],
