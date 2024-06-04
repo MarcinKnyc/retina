@@ -2,8 +2,7 @@ import os
 import glob
 from urllib.request import urlretrieve as download
 from shutil import rmtree
-from .file_operations import untar, ungz, rename_all, split_data, format2png, clean_format, unzip
-from .loading import load_data
+from .file_operations import untar, ungz, rename_all, split_data, format2png, clean_format, unzip, load_data
 
 
 def make_paths(path: str):
