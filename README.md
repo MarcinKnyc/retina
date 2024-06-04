@@ -6,7 +6,9 @@
 
 ## Data download
 
-Use <https://www.kaggle.com/datasets/abdallahwagih/retina-blood-vessel>, download the zip into `retina/data/01_raw/` as `Retina Blood Vessel Segmentation kaggle.zip`.
+DRIVE: Download <https://www.kaggle.com/datasets/zionfuo/drive2004>, and save it as `retina/data/01_raw/DRIVE.zip`.
+
+STARE: Downloaded automagically.
 
 ## Usage
 

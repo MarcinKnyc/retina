@@ -1,13 +1,11 @@
 from kedro.pipeline import Pipeline, node
 
-from .unzip import rename_folder, unzip_folder
-
 from .feature_extraction import create_dataset, preprocess_images
 from .loading import load_data
 from .models_and_predictions import predict_model, train_adaboost, train_knn, train_logitboost, undersampling
 from .visualisation import plot_images, plot_results
 
-from .prepare import prepare_stare
+from .prepare import prepare_stare, prepare_drive
 
 
 def create_pipeline(**kwargs):
@@ -22,20 +20,12 @@ def create_pipeline(**kwargs):
                 outputs="sequence",  # TODO: use this to force execution before other nodes
                 name="STARE"
             ),
-            node(
-                func=unzip_folder,
-                inputs=["params:kaggle_zipped_images_path",
-                        "params:kaggle_extracted_images_path"],
-                outputs=None,
-                name="unzip_folder"
-            ),
-            node(
-                func=rename_folder,
-                inputs=["params:kaggle_path_to_rename",
-                        "params:kaggle_rename_path_to"],
-                outputs=None,
-                name="rename_unzipped_folder"
-            ),
+            node(func=prepare_drive,
+                 inputs=["params:datapath",
+                         "params:drive_path"],
+                 outputs="sequence2",  # TODO: use this to force execution before other nodes
+                 name="DRIVE"
+                 ),
             node(
                 func=load_data,
                 inputs=["params:input_path",
