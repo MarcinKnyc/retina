@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node
 
-from .feature_extraction import create_dataset, preprocess_images
+from .feature_extraction import create_dataset
 from .models_and_predictions import predict_model, train_adaboost, train_knn, train_logitboost, undersampling
 from .visualisation import plot_images, plot_results
 
@@ -16,23 +16,15 @@ def create_pipeline(**kwargs):
                         "params:stare_images_url",
                         "params:stare_labels_url",
                         "params:debug"],
-                outputs=["STARE_train_raw_photos",
+                outputs=["STARE_train_photos",
                          "STARE_train_masks",
-                         "STARE_test_raw_photos",
+                         "STARE_test_photos",
                          "STARE_test_masks"],
                 name="STARE"
             ),
             node(
-                func=preprocess_images,
-                inputs=["STARE_train_raw_photos",
-                        "STARE_test_raw_photos"],
-                outputs=["STARE_train_photos",
-                         "STARE_test_photos"],
-                name="preprocess_STARE",
-            ),
-            node(
                 func=plot_images,
-                inputs=["STARE_train_raw_photos",
+                inputs=["STARE_train_photos",
                         "STARE_train_masks",
                         "params:stare_image_plot_title",
                         "params:stare_output_path",
@@ -92,23 +84,15 @@ def create_pipeline(**kwargs):
                 func=prepare_drive,
                 inputs=["params:drive_path",
                         "params:debug"],
-                outputs=["DRIVE_train_raw_photos",
+                outputs=["DRIVE_train_photos",
                          "DRIVE_train_masks",
-                         "DRIVE_test_raw_photos",
+                         "DRIVE_test_photos",
                          "DRIVE_test_masks"],
                 name="DRIVE"
             ),
             node(
-                func=preprocess_images,
-                inputs=["DRIVE_train_raw_photos",
-                        "DRIVE_test_raw_photos"],
-                outputs=["DRIVE_train_photos",
-                         "DRIVE_test_photos"],
-                name="preprocess_DRIVE",
-            ),
-            node(
                 func=plot_images,
-                inputs=["DRIVE_train_raw_photos",
+                inputs=["DRIVE_train_photos",
                         "DRIVE_train_masks",
                         "params:drive_image_plot_title",
                         "params:drive_output_path",
@@ -169,23 +153,15 @@ def create_pipeline(**kwargs):
                 inputs=["params:chasedb1_path",
                         "params:chasedb1_url",
                         "params:debug"],
-                outputs=["CHASEDB1_train_raw_photos",
+                outputs=["CHASEDB1_train_photos",
                          "CHASEDB1_train_masks",
-                         "CHASEDB1_test_raw_photos",
+                         "CHASEDB1_test_photos",
                          "CHASEDB1_test_masks"],
                 name="CHASEDB1"
             ),
             node(
-                func=preprocess_images,
-                inputs=["CHASEDB1_train_raw_photos",
-                        "CHASEDB1_test_raw_photos"],
-                outputs=["CHASEDB1_train_photos",
-                         "CHASEDB1_test_photos"],
-                name="preprocess_CHASEDB1",
-            ),
-            node(
                 func=plot_images,
-                inputs=["CHASEDB1_train_raw_photos",
+                inputs=["CHASEDB1_train_photos",
                         "CHASEDB1_train_masks",
                         "params:chasedb1_image_plot_title",
                         "params:chasedb1_output_path",
