@@ -10,14 +10,11 @@ Use <https://www.kaggle.com/datasets/abdallahwagih/retina-blood-vessel>, downloa
 
 ## Usage
 
-`kedro run`
+`kedro run --runner=SequentialRunner`
 
-The folder will unzip the first time, then the run will fail.
-Use `kedro run` again, when the folder is unzipped. The folder will be renamed, then the run will fail.
-Use `kedro run` again, then the run should succeed.
 The results are in `02_intermediate/results.png`.
 
-Change `debug: False` to `debug: True` to test if the pipeline functions correctly. It changes the amount of images sampled to 5. This reduces the runtime significantly, as the most time-intensive operation is the processing of test images.
+Change `debug: False` to `debug: True` in `./conf/base/parameters.yml` to test if the pipeline functions correctly. It changes the amount of images sampled to 5. This reduces the runtime significantly, as the most time-intensive operation is the processing of test images.
 
 ## Todo
 

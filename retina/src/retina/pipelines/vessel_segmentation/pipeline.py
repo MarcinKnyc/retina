@@ -17,28 +17,28 @@ def create_pipeline(**kwargs):
                 func=prepare_stare,
                 inputs=["params:stare_images_url",
                         "params:stare_labels_url",
-                        "params:datapath",
                         "params:stare_path"],
                 outputs="sequence",  # TODO: use this to force execution before other nodes
                 name="STARE"
             ),
-            node(
-                func=unzip_folder,
-                inputs=["params:kaggle_zipped_images_path",
-                        "params:kaggle_extracted_images_path"],
-                outputs=None,
-                name="unzip_folder"
-            ),
-            node(
-                func=rename_folder,
-                inputs=["params:kaggle_path_to_rename",
-                        "params:kaggle_rename_path_to"],
-                outputs=None,
-                name="rename_unzipped_folder"
-            ),
+            # node(
+            #     func=unzip_folder,
+            #     inputs=["params:kaggle_zipped_images_path",
+            #             "params:kaggle_extracted_images_path"],
+            #     outputs=None,
+            #     name="unzip_folder"
+            # ),
+            # node(
+            #     func=rename_folder,
+            #     inputs=["params:kaggle_path_to_rename",
+            #             "params:kaggle_rename_path_to"],
+            #     outputs=None,
+            #     name="rename_unzipped_folder"
+            # ),
             node(
                 func=load_data,
-                inputs=["params:input_path",
+                # inputs=["params:kaggle_rename_path_to",
+                inputs=["params:stare_path",
                         "params:debug"],
                 outputs=["train_raw_photos",
                          "train_masks",
@@ -67,9 +67,7 @@ def create_pipeline(**kwargs):
             node(
                 func=create_dataset,
                 inputs=["train_photos",
-                        "train_masks",
-                        "params:dataset_size",
-                        "params:dataset_step"],
+                        "train_masks"],
                 outputs=["train_features",
                          "train_labels"],
                 name="create_dataset_node",

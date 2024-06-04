@@ -28,12 +28,10 @@ def predict_model(knn_classifier: KNeighborsClassifier, test_photos: list, test_
     """Predicts the masks for test images using the trained classifier."""
     y_pred_images = []
     for photo, mask in zip(test_photos, test_masks):
-        test_features, _ = create_dataset([photo], [mask], size=5)
+        test_features, _ = create_dataset([photo], [mask])
         y_pred = knn_classifier.predict(test_features)
-        y_pred_img = np.zeros((512, 512)) #todo: extract 512, 512 as parameter in all of code.
-        for i in range(512):
-            for j in range(512):
-                y_pred_img[i][j] = y_pred[i * 512 + j]
+        shape = np.shape(test_photos[0]) # shape contains sth like (512, 512, 3)
+        y_pred_img = np.reshape(y_pred, (shape[0], shape[1]))
         y_pred_images.append(y_pred_img)
 
     return y_pred_images

@@ -25,7 +25,7 @@ def get(url: str, path: str, name: str) -> None:
     os.rename(extracted, path + name)
 
 
-def prepare_stare(stare_images_url: str, stare_labels_url: str, datapath: str, name: str) -> int:
+def prepare_stare(stare_images_url: str, stare_labels_url: str, datapath: str) -> int:
     def make_paths(path: str):
         os.makedirs(path)
         os.makedirs(path + "train/image")
@@ -33,24 +33,23 @@ def prepare_stare(stare_images_url: str, stare_labels_url: str, datapath: str, n
         os.makedirs(path + "test/image")
         os.makedirs(path + "test/mask")
 
-    path = datapath + name
-    if os.path.exists(path):
+    if os.path.exists(datapath):
         return 0
 
-    make_paths(path)
+    make_paths(datapath)
 
-    get(stare_images_url, path, "image")
-    get(stare_labels_url, path, "mask")
+    get(stare_images_url, datapath, "image")
+    get(stare_labels_url, datapath, "mask")
 
-    split_data(path + 'image', path + 'train/image', path + 'test/image')
-    split_data(path + 'mask', path + 'train/mask', path + 'test/mask')
+    split_data(datapath + 'image', datapath + 'train/image', datapath + 'test/image')
+    split_data(datapath + 'mask', datapath + 'train/mask', datapath + 'test/mask')
 
-    ppm2png(path)
-    clean_ppm(path)
+    ppm2png(datapath)
+    clean_ppm(datapath)
 
-    rename(path + "train/image")
-    rename(path + "train/mask")
-    rename(path + "test/image")
-    rename(path + "test/mask")
+    rename(datapath + "train/image")
+    rename(datapath + "train/mask")
+    rename(datapath + "test/image")
+    rename(datapath + "test/mask")
 
     return 0

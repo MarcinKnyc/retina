@@ -27,3 +27,4 @@ def get_quality(masks: list, postprocessed_masks: list) -> tuple:
     sensitivity_scores = [sensitivity_score(mask, postprocessed_mask) for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
     specificity_scores = [specificity_score(mask, postprocessed_mask) for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
     return accuracy_scores, sensitivity_scores, specificity_scores
+

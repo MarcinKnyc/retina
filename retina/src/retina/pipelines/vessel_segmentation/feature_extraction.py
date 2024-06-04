@@ -73,7 +73,7 @@ def gabor_filter_responses(image):
             gabor_features.append(cv2.filter2D(image, cv2.CV_64F, gabor_kernel))
     return np.stack(gabor_features, axis=-1).max(axis=-1)
 
-def create_dataset(photos: list, masks: list, size: int = 5, step: int = 1) -> tuple:
+def create_dataset(photos: list, masks: list) -> tuple:
     """Creates a dataset by extracting patches and features from images."""
     ds_photos = []
     ds_masks = []
