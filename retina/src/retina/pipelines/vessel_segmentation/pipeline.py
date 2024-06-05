@@ -13,8 +13,8 @@ def create_pipeline(**kwargs):
 
     for classifier_name, classifier in (
         ("logitboost", train_logitboost),
-        #("knn", train_knn),
-        #("adaboost", train_adaboost)
+        ("knn", train_knn),
+        ("adaboost", train_adaboost)
     ):
 
         stare_pipeline = Pipeline(

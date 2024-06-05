@@ -68,7 +68,7 @@ chasedb1_name: "CHASEDB1"
 chasedb1_path: "./data/01_input/CHASEDB1/"
 chasedb1_url: https://researchdata.kingston.ac.uk/96/1/CHASEDB1.zip
 
-chasedb1_output_path: "./data/02_intermediate/CHASEDB1/"
+chasedb1_output_path: "./data/02_output/CHASEDB1/"
 chasedb1_image_plot_title: "CHASEDB1: Image and Mask"
 chasedb1_image_plot_filename: "image_and_mask_chasedb1.png"
 chasedb1_result_knn_plot_title: "CHASEDB1 & knn: Ground truth and predicted mask"

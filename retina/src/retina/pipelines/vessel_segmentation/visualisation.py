@@ -28,12 +28,11 @@ def plot_images(train_raw_photos, train_masks, title: str, output_path: str, fil
     save_plot(output_path, filename)
 
 
-def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, name: str, output_path: str, filename:str,  figsize=(27, 10), n=10):
-    # TODO: Handle model
+def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, name: str, output_path: str, filename: str,  figsize=(27, 10), n=10):
     """Plots the results along with accuracy, sensitivity, and specificity metrics, and saves the plot to a file."""
     def gtapm():
         plt.figure(figsize=figsize)
-        plt.suptitle(name , fontsize=20)
+        plt.suptitle(name, fontsize=20)
         for i in range(n):
             plt.subplot(3, 10, i + 1)
             img = normalize(test_raw_photos[i].astype(np.float32))
@@ -49,28 +48,66 @@ def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, name: s
             pred = normalize(y_pred_images[i].astype(np.float32))
             plt.imshow(pred, cmap='gray')
             plt.axis('off')
-            plt.title('Mask\nAcc: {:.3f}\nSens: {:.3f}\nSpec: {:.3f}'.format(
-                accuracy_scores[i], sensitivity_scores[i], specificity_scores[i]))
+            plt.title('Mask')
             plt.tight_layout()
 
         save_plot(output_path, "gtamp_" + filename)
 
     def roc():
         plt.figure(figsize=figsize)
-        plt.plot(fpr, tpr, 'b', label='AUC = %0.2f' % auc)
+        plt.plot(quality["fpr_roc"], quality["tpr_roc"], 'b',
+                 label='AUC = %0.2f' % quality["auc"])
         plt.legend(loc='lower right')
         plt.plot([0, 1], [0, 1], 'r--')
         plt.xlim([0, 1])
         plt.ylim([0, 1])
         plt.ylabel('True Positive Rate')
         plt.xlabel('False Positive Rate')
-        plt.title(f'{name}: ROC - TPR {np.float32(tpr[1])}, FPR {np.float32(fpr[1])}, AUC {np.float32(auc)}')  # nopep8
+        plt.title(f'{name}: ROC')
         plt.gca().set_aspect('equal')
         plt.tight_layout()
 
-        save_plot(output_path, "roc_" + filename )
+        save_plot(output_path, "roc_" + filename)
 
-    accuracy_scores, sensitivity_scores, specificity_scores, fpr, tpr, auc = get_quality(
+    def table():
+        data = {
+            "Metric": ["True Negative (tn)", "False Positive (fp)", "False Negative (fn)", "True Positive (tp)",
+                       "True Positive Rate (tpr)", "False Positive Rate (fpr)", "True Negative Rate (tnr)",
+                       "Accuracy (acc)", "False Negative Rate (fnr)", "Positive Predictive Value (ppv)",
+                       "False Discovery Rate (fdr)", "Area Under Curve (auc)"],
+            "Value": [quality["tn"],
+                      quality["fp"],
+                      quality["fn"],
+                      quality["tp"],
+                      quality["tpr"],
+                      quality["fpr"],
+                      quality["tnr"],
+                      quality["acc"],
+                      quality["fnr"],
+                      quality["ppv"],
+                      quality["fdr"],
+                      quality["auc"]]
+        }
+
+        fig, ax = plt.subplots(figsize=(10, 4))
+
+        ax.xaxis.set_visible(False)
+        ax.yaxis.set_visible(False)
+        ax.set_frame_on(False)
+
+        table_data = list(zip(data["Metric"], data["Value"]))
+        table = ax.table(cellText=table_data, colLabels=[
+                         "Metric", "Value"], cellLoc='center', loc='center')
+
+        table.auto_set_font_size(False)
+        table.set_fontsize(12)
+        table.scale(1.2, 1.2)
+
+        plt.subplots_adjust(left=0.2, top=0.8)
+
+        save_plot(output_path, "table_" + filename)
+
+    quality = get_quality(
         test_masks, y_pred_images)
 
     if n > len(test_raw_photos):
@@ -78,17 +115,12 @@ def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, name: s
 
     gtapm()
     roc()
-
-    print('Global avg accuracy: {:.3f}'.format(
-        sum(accuracy_scores) / len(accuracy_scores)))
-    print('Global avg sensitivity: {:.3f}'.format(
-        sum(sensitivity_scores) / len(sensitivity_scores)))
-    print('Global avg specificity: {:.3f}'.format(
-        sum(specificity_scores) / len(specificity_scores)))
+    table()
 
 
 def save_plot(output_path: str, filename: str):
     """Utility function to save a plot."""
     plt.tight_layout()
+    print(os.path.join(output_path, filename))
     plt.savefig(os.path.join(output_path, filename), bbox_inches='tight')
     plt.close()

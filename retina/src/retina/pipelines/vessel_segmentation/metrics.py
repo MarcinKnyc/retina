@@ -2,38 +2,39 @@ import numpy as np
 import sklearn.metrics as metrics
 
 
-def accuracy_score(y_true: np.ndarray, y_pred: np.ndarray) -> float:
-    """Calculates the accuracy score."""
-    y_true = y_true.flatten()
-    y_pred = y_pred.flatten()
-    return (y_true == y_pred).mean()
-
-
-def sensitivity_score(y_true: np.ndarray, y_pred: np.ndarray) -> float:
-    """Calculates the sensitivity score."""
-    y_true = y_true.flatten()
-    y_pred = y_pred.flatten()
-    return ((y_true == 255) & (y_pred == 255)).sum() / (y_true == 255).sum()
-
-
-def specificity_score(y_true: np.ndarray, y_pred: np.ndarray) -> float:
-    """Calculates the specificity score."""
-    y_true = y_true.flatten()
-    y_pred = y_pred.flatten()
-    return ((y_true == 0) & (y_pred == 0)).sum() / (y_true == 0).sum()
-
-
-def get_quality(masks: list, postprocessed_masks: list) -> tuple:
+def get_quality(masks: list, postprocessed_masks: list) -> dict:
     """Computes the quality metrics for the predictions."""
-    accuracy_scores = [accuracy_score(mask, postprocessed_mask)
-                       for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
-    sensitivity_scores = [sensitivity_score(mask, postprocessed_mask)
-                          for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
-    specificity_scores = [specificity_score(mask, postprocessed_mask)
-                          for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
+    y_true = np.concatenate(masks).ravel()
+    y_pred = np.concatenate(postprocessed_masks).ravel()
+
+    tn, fp, fn, tp = metrics.confusion_matrix(y_true, y_pred).ravel()
+
+    tnr = tn / (tn + fp)
+    acc = (tp + tn) / (tp + tn + fp + fn)
+    fnr = fn / (fn + tp)
+    ppv = tp / (tp + fp)
+    fdr = fp / (fp + tp)
+
     fpr, tpr, _ = metrics.roc_curve(
         np.concatenate(masks).ravel(),
         np.concatenate(postprocessed_masks).ravel(),
         pos_label=255)
+
     auc = metrics.auc(fpr, tpr)
-    return accuracy_scores, sensitivity_scores, specificity_scores, fpr, tpr, auc
+
+    return dict(
+        tn=tn,
+        fp=fp,
+        fn=fn,
+        tp=tp,
+        tpr=np.float32(tpr[1]),
+        fpr=np.float32(fpr[1]),
+        tnr=tnr,
+        acc=acc,
+        fnr=fnr,
+        ppv=ppv,
+        fdr=fdr,
+        auc=np.float32(auc),
+        tpr_roc=tpr,
+        fpr_roc=fpr,
+    )
