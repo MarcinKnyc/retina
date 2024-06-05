@@ -11,11 +11,12 @@ def normalize(img):
     return img
 
 
-def plot_images(train_raw_photos, train_masks, name: str, output_path: str,  figsize=(20, 10), cmap='gray'):
+def plot_images(train_raw_photos, train_masks, title: str, output_path: str, filename: str, figsize=(20, 10), cmap='gray'):
     """Plots images in a grid layout and saves the plot to a file."""
+
     images_set = [train_raw_photos[:5], train_masks[:5]]
     plt.figure(figsize=figsize)
-    plt.suptitle(name + ": Images and Masks", fontsize=20)
+    plt.suptitle(title, fontsize=20)
     for i in range(len(images_set[0])):
         for j in range(len(images_set)):
             plt.subplot(len(images_set), len(
@@ -24,15 +25,15 @@ def plot_images(train_raw_photos, train_masks, name: str, output_path: str,  fig
             plt.imshow(img, cmap=cmap)
             plt.axis('off')
         plt.tight_layout()
-    save_plot(output_path, name + "_images.png")
+    save_plot(output_path, filename)
 
 
-def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, name: str, output_path: str,  figsize=(27, 10), n=10):
+def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, name: str, output_path: str, filename:str,  figsize=(27, 10), n=10):
     # TODO: Handle model
     """Plots the results along with accuracy, sensitivity, and specificity metrics, and saves the plot to a file."""
     def gtapm():
         plt.figure(figsize=figsize)
-        plt.suptitle(name + ": Ground truth and predicted mask", fontsize=20)
+        plt.suptitle(name , fontsize=20)
         for i in range(n):
             plt.subplot(3, 10, i + 1)
             img = normalize(test_raw_photos[i].astype(np.float32))
@@ -52,7 +53,7 @@ def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, name: s
                 accuracy_scores[i], sensitivity_scores[i], specificity_scores[i]))
             plt.tight_layout()
 
-        save_plot(output_path, name + "_gtapm.png")
+        save_plot(output_path, "gtamp_" + filename)
 
     def roc():
         plt.figure(figsize=figsize)
@@ -67,7 +68,7 @@ def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, name: s
         plt.gca().set_aspect('equal')
         plt.tight_layout()
 
-        save_plot(output_path, name + "_roc.png")
+        save_plot(output_path, "roc_" + filename )
 
     accuracy_scores, sensitivity_scores, specificity_scores, fpr, tpr, auc = get_quality(
         test_masks, y_pred_images)

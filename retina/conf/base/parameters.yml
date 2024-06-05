@@ -9,13 +9,85 @@ stare_path: "./data/01_input/STARE/"
 stare_images_url: "https://cecas.clemson.edu/~ahoover/stare/probing/stare-images.tar"
 stare_labels_url: "https://cecas.clemson.edu/~ahoover/stare/probing/labels-ah.tar"
 
-# drive:
-drive_name: "DRIVE"
+stare_output_path: "./data/02_output/STARE/"
+stare_image_plot_title: "STARE: Image and Mask"
+stare_image_plot_filename: "image_and_mask_stare.png"
+stare_result_knn_plot_title: "STARE & knn: Ground truth and predicted mask"
+stare_result_knn_plot_filename: "results_knn_stare.png"
+stare_result_logitboost_plot_title: "STARE & logitboost: Ground truth and predicted mask"
+stare_result_logitboost_plot_filename: "results_logitboost_stare.png"
+stare_result_adaboost_plot_title: "STARE & adaboost: Ground truth and predicted mask"
+stare_result_adaboost_plot_filename: "results_adaboost_stare.png"
 
+stare_drive_result_knn_plot_title: "STARE -> DRIVE & knn: Ground truth and predicted mask"
+stare_drive_result_knn_plot_filename: "results_knn_stare_drive.png"
+stare_drive_result_logitboost_plot_title: "STARE -> DRIVE & logitboost: Ground truth and predicted mask"
+stare_drive_result_logitboost_plot_filename: "results_logitboost_stare_drive.png"
+stare_drive_result_adaboost_plot_title: "STARE -> DRIVE & adaboost: Ground truth and predicted mask"
+stare_drive_result_adaboost_plot_filename: "results_adaboost_stare_drive.png"
+
+stare_chasedb1_result_knn_plot_title: "STARE -> CHASEDB1 & knn: Ground truth and predicted mask"
+stare_chasedb1_result_knn_plot_filename: "results_knn_stare_chasedb1.png"
+stare_chasedb1_result_logitboost_plot_title: "STARE -> CHASEDB1 & logitboost: Ground truth and predicted mask"
+stare_chasedb1_result_logitboost_plot_filename: "results_logitboost_stare_chasedb1.png"
+stare_chasedb1_result_adaboost_plot_title: "STARE -> CHASEDB1 & adaboost: Ground truth and predicted mask"
+stare_chasedb1_result_adaboost_plot_filename: "results_adaboost_stare_chasedb1.png"
+
+
+# drive:
 drive_path: "./data/01_input/DRIVE/"
+
+drive_output_path: "./data/02_output/DRIVE/"
+drive_image_plot_title: "DRIVE: Image and Mask"
+drive_image_plot_filename: "image_and_mask_drive.png"
+drive_result_knn_plot_title: "DRIVE & knn: Ground truth and predicted mask"
+drive_result_knn_plot_filename: "results_knn_drive.png"
+drive_result_logitboost_plot_title: "DRIVE & logitboost: Ground truth and predicted mask"
+drive_result_logitboost_plot_filename: "results_logitboost_drive.png"
+drive_result_adaboost_plot_title: "DRIVE & adaboost: Ground truth and predicted mask"
+drive_result_adaboost_plot_filename: "results_adaboost_drive.png"
+
+drive_stare_result_knn_plot_title: "DRIVE -> STARE & knn: Ground truth and predicted mask"
+drive_stare_result_knn_plot_filename: "results_knn_drive_stare.png"
+drive_stare_result_logitboost_plot_title: "DRIVE -> STARE & logitboost: Ground truth and predicted mask"
+drive_stare_result_logitboost_plot_filename: "results_logitboost_drive_stare.png"
+drive_stare_result_adaboost_plot_title: "DRIVE -> STARE & adaboost: Ground truth and predicted mask"
+drive_stare_result_adaboost_plot_filename: "results_adaboost_drive_stare.png"
+
+drive_chasedb1_result_knn_plot_title: "DRIVE -> CHASEDB1 & knn: Ground truth and predicted mask"
+drive_chasedb1_result_knn_plot_filename: "results_knn_drive_chasedb1.png"
+drive_chasedb1_result_logitboost_plot_title: "DRIVE -> CHASEDB1 & logitboost: Ground truth and predicted mask"
+drive_chasedb1_result_logitboost_plot_filename: "results_logitboost_drive_chasedb1.png"
+drive_chasedb1_result_adaboost_plot_title: "DRIVE -> CHASEDB1 & adaboost: Ground truth and predicted mask"
+drive_chasedb1_result_adaboost_plot_filename: "results_adaboost_drive_chasedb1.png"
+
 
 # chasedb1:
 chasedb1_name: "CHASEDB1"
 
 chasedb1_path: "./data/01_input/CHASEDB1/"
 chasedb1_url: https://researchdata.kingston.ac.uk/96/1/CHASEDB1.zip
+
+chasedb1_output_path: "./data/02_intermediate/CHASEDB1/"
+chasedb1_image_plot_title: "CHASEDB1: Image and Mask"
+chasedb1_image_plot_filename: "image_and_mask_chasedb1.png"
+chasedb1_result_knn_plot_title: "CHASEDB1 & knn: Ground truth and predicted mask"
+chasedb1_result_knn_plot_filename: "results_knn_chasedb1.png"
+chasedb1_result_logitboost_plot_title: "CHASEDB1 & logitboost: Ground truth and predicted mask"
+chasedb1_result_logitboost_plot_filename: "results_logitboost_chasedb1.png"
+chasedb1_result_adaboost_plot_title: "CHASEDB1 & adaboost: Ground truth and predicted mask"
+chasedb1_result_adaboost_plot_filename: "results_adaboost_chasedb1.png"
+
+chasedb1_stare_result_knn_plot_title: "CHASEDB1 -> STARE & knn: Ground truth and predicted mask"
+chasedb1_stare_result_knn_plot_filename: "results_knn_chasedb1_stare.png"
+chasedb1_stare_result_logitboost_plot_title: "CHASEDB1 -> STARE & logitboost: Ground truth and predicted mask"
+chasedb1_stare_result_logitboost_plot_filename: "results_logitboost_chasedb1_stare.png"
+chasedb1_stare_result_adaboost_plot_title: "CHASEDB1 -> STARE & adaboost: Ground truth and predicted mask"
+chasedb1_stare_result_adaboost_plot_filename: "results_adaboost_chasedb1_stare.png"
+
+chasedb1_drive_result_knn_plot_title: "CHASEDB1 -> DRIVE & knn: Ground truth and predicted mask"
+chasedb1_drive_result_knn_plot_filename: "results_knn_chasedb1_drive.png"
+chasedb1_drive_result_logitboost_plot_title: "CHASEDB1 -> DRIVE & logitboost: Ground truth and predicted mask"
+chasedb1_drive_result_logitboost_plot_filename: "results_logitboost_chasedb1_drive.png"
+chasedb1_drive_result_adaboost_plot_title: "CHASEDB1 -> DRIVE & adaboost: Ground truth and predicted mask"
+chasedb1_drive_result_adaboost_plot_filename: "results_adaboost_chasedb1_drive.png"
