@@ -1,4 +1,6 @@
 import numpy as np
+import sklearn.metrics as metrics
+
 
 def accuracy_score(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """Calculates the accuracy score."""
@@ -23,8 +25,15 @@ def specificity_score(y_true: np.ndarray, y_pred: np.ndarray) -> float:
 
 def get_quality(masks: list, postprocessed_masks: list) -> tuple:
     """Computes the quality metrics for the predictions."""
-    accuracy_scores = [accuracy_score(mask, postprocessed_mask) for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
-    sensitivity_scores = [sensitivity_score(mask, postprocessed_mask) for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
-    specificity_scores = [specificity_score(mask, postprocessed_mask) for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
-    return accuracy_scores, sensitivity_scores, specificity_scores
-
+    accuracy_scores = [accuracy_score(mask, postprocessed_mask)
+                       for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
+    sensitivity_scores = [sensitivity_score(mask, postprocessed_mask)
+                          for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
+    specificity_scores = [specificity_score(mask, postprocessed_mask)
+                          for mask, postprocessed_mask in zip(masks, postprocessed_masks)]
+    fpr, tpr, _ = metrics.roc_curve(
+        np.concatenate(masks).ravel(),
+        np.concatenate(postprocessed_masks).ravel(),
+        pos_label=255)
+    auc = metrics.auc(fpr, tpr)
+    return accuracy_scores, sensitivity_scores, specificity_scores, fpr, tpr, auc

@@ -1,32 +1,21 @@
 # common:
 debug: True
+output_path: "./data/02_output/"
 
 # stare:
-stare_path: "./data/01_raw/STARE/"
+stare_name: "STARE"
+
+stare_path: "./data/01_input/STARE/"
 stare_images_url: "https://cecas.clemson.edu/~ahoover/stare/probing/stare-images.tar"
 stare_labels_url: "https://cecas.clemson.edu/~ahoover/stare/probing/labels-ah.tar"
 
-stare_output_path: "./data/02_intermediate/STARE/"
-stare_image_plot_title: "STARE: Image and Mask"
-stare_image_plot_filename: "image_and_mask_stare.png"
-stare_result_plot_title: "STARE: Ground truth and predicted mask"
-stare_result_plot_filename: "results_stare.png"
-
 # drive:
-drive_path: "./data/01_raw/DRIVE/"
+drive_name: "DRIVE"
 
-drive_output_path: "./data/02_intermediate/DRIVE/"
-drive_image_plot_title: "DRIVE: Image and Mask"
-drive_image_plot_filename: "image_and_mask_drive.png"
-drive_result_plot_title: "DRIVE: Ground truth and predicted mask"
-drive_result_plot_filename: "results_drive.png"
+drive_path: "./data/01_input/DRIVE/"
 
 # chasedb1:
-chasedb1_path: "./data/01_raw/CHASEDB1/"
-chasedb1_url: https://researchdata.kingston.ac.uk/96/1/CHASEDB1.zip
+chasedb1_name: "CHASEDB1"
 
-chasedb1_output_path: "./data/02_intermediate/CHASEDB1/"
-chasedb1_image_plot_title: "CHASEDB1: Image and Mask"
-chasedb1_image_plot_filename: "image_and_mask_chasedb1.png"
-chasedb1_result_plot_title: "CHASEDB1: Ground truth and predicted mask"
-chasedb1_result_plot_filename: "results_chasedb1.png"
+chasedb1_path: "./data/01_input/CHASEDB1/"
+chasedb1_url: https://researchdata.kingston.ac.uk/96/1/CHASEDB1.zip

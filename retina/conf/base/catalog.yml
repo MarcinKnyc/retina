@@ -1,43 +1,43 @@
 # vessel_segmentation pipeline:
 train_raw_photos:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/train_raw_photos.pkl
+  filepath: data/03_reporting/train_raw_photos.pkl
 
 train_masks:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/train_masks.pkl
+  filepath: data/03_reporting/train_masks.pkl
 
 test_raw_photos:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/test_raw_photos.pkl
+  filepath: data/03_reporting/test_raw_photos.pkl
 
 test_masks:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/test_masks.pkl
+  filepath: data/03_reporting/test_masks.pkl
 
 train_photos:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/train_photos.pkl
+  filepath: data/03_reporting/train_photos.pkl
 
 test_photos:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/test_photos.pkl
+  filepath: data/03_reporting/test_photos.pkl
 
 train_features:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/train_features.pkl
+  filepath: data/03_reporting/train_features.pkl
 
 train_labels:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/train_labels.pkl
+  filepath: data/03_reporting/train_labels.pkl
 
 train_features_under:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/train_features_under.pkl
+  filepath: data/03_reporting/train_features_under.pkl
 
 train_labels_under:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/train_labels_under.pkl
+  filepath: data/03_reporting/train_labels_under.pkl
 
 # knn_classifier:
 #   type: pickle.PickleDataset
@@ -45,5 +45,4 @@ train_labels_under:
 
 y_pred_images:
   type: pickle.PickleDataset
-  filepath: data/08_reporting/y_pred_images.pkl
-
+  filepath: data/03_reporting/y_pred_images.pkl
