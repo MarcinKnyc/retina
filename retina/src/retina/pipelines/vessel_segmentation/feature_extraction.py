@@ -75,7 +75,8 @@ def create_dataset(photos: list, masks: list) -> tuple:
     """Creates a dataset by extracting patches and features from images."""
     ds_photos = []
     ds_masks = []
-    for photo, mask in tqdm(zip(photos, masks), total=len(photos), desc='Processing photos and their masks'):
+
+    for photo, mask in tqdm(list(zip(photos, masks)), total=len(photos), desc='Processing photos and their masks'):
         feature_vector = create_feature_vector(photo)
         height, width, num_features = feature_vector.shape
         # Flatten the features
