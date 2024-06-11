@@ -48,8 +48,7 @@ def train_knn(train_features: np.ndarray, train_labels: np.ndarray) -> KNeighbor
 
 def train_logitboost(train_features: np.ndarray, train_labels: np.ndarray) -> LogitBoost:
     """Trains a LogitBoost classifier"""
-    logitboost_classifier = LogitBoost(
-        estimator=DecisionTreeRegressor(max_depth=1), n_estimators=200)
+    logitboost_classifier = LogitBoost( n_estimators=200)
     logitboost_classifier.fit(train_features, train_labels)
 
     return logitboost_classifier
@@ -65,10 +64,15 @@ def train_adaboost(train_features: np.ndarray, train_labels: np.ndarray) -> AdaB
 
 def predict_model(classifier, test_photos: List[np.ndarray], test_masks: List[np.ndarray]) -> list:
     """Predicts the masks for test images using the trained classifier."""
+    threshold = 0.5
+
     y_pred_images = []
     for photo, mask in zip(test_photos, test_masks):
         test_features, _ = create_dataset([photo], [mask])
-        y_pred = classifier.predict(test_features)
+        
+        y_pred = (classifier.predict_proba(test_features)[:, 1] > threshold) *255
+
+        #code.interact( local=locals() )
         # shape contains sth like (512, 512, 3)
         shape = np.shape(test_photos[0])
         y_pred_img = np.reshape(y_pred, (shape[0], shape[1]))
