@@ -21,7 +21,7 @@ def create_feature_vector(image):
         morph_transformation,
         line_strength_1,
         line_strength_2,
-        gabor_response,
+        *gabor_response,
         inverted_green,
     ], axis=-1)
 
@@ -60,18 +60,21 @@ def line_strength(image):
 
 
 def gabor_filter_responses(image):
-    gabor_features = []
-    for theta in range(0, 180, 10):
-        theta_rad = theta * np.pi / 180
-        for sigma in (2, 3, 4, 5):
+    final_features = []
+    for sigma in (2, 3, 4, 5):
+        gabor_features = []
+        for theta in range(0, 180, 10):
+            theta_rad = theta * np.pi / 180
+        
             gabor_kernel = cv2.getGaborKernel(
                 (sigma*6, sigma*6), sigma, theta_rad, 10.0, 0.5, 0, ktype=cv2.CV_64F)
             gabor_features.append(cv2.filter2D(
                 image, cv2.CV_64F, gabor_kernel))
+        final_features.append(np.stack(gabor_features, axis=-1).max(axis=-1))
 
     # import code
     # code.interact(local=locals())
-    return np.stack(gabor_features, axis=-1).max(axis=-1)
+    return final_features
 
 def extract_features( photos ):
     feature_photos = []
