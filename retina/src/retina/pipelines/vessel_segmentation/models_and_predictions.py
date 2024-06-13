@@ -64,21 +64,19 @@ def train_adaboost(train_features: np.ndarray, train_labels: np.ndarray) -> AdaB
 def apply_threshold(predicted_images, threshold = 0.5):
     return (predicted_images > threshold) *255
 
-def predict_model(classifier, test_photos: List[np.ndarray]) -> list:
+def predict_model(classifier, test_features: List[np.ndarray]) -> list:
     """Predicts the masks for test images using the trained classifier."""
 
     y_pred_images = []
-    for photo in test_photos:
-        feature_vector = extract_features([photo])[0]
-        height, width, num_features = feature_vector.shape
+    for photo_features in test_features:
+        height, width, num_features = photo_features.shape
         # Flatten the features
-        test_features = feature_vector.reshape(-1, num_features)
+        photo_features = photo_features.reshape(-1, num_features)
         
-        y_pred = classifier.predict_proba(test_features)[:, 1]
+        y_pred = classifier.predict_proba(photo_features)[:, 1]
 
         # shape contains sth like (512, 512, 3)
-        shape = np.shape(test_photos[0])
-        y_pred_img = np.reshape(y_pred, (shape[0], shape[1]))
+        y_pred_img = np.reshape(y_pred, (height, width))
         y_pred_images.append(y_pred_img)
 
     return np.array(y_pred_images)

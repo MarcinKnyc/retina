@@ -11,8 +11,8 @@ def create_pipeline(**kwargs):
 
     classifiers = (
         ("logitboost", train_logitboost),
-        #("knn", train_knn),
-        #("adaboost", train_adaboost)
+        ("knn", train_knn),
+        ("adaboost", train_adaboost)
         )
     datasets = (
             "drive",
@@ -36,7 +36,13 @@ def create_pipeline(**kwargs):
                 func=extract_features,
                 inputs="train_photos",
                 outputs="train_feature_photos",
-                name="extract_features"
+                name="extract_training_features"
+            ),
+            node( 
+                func=extract_features,
+                inputs="test_photos",
+                outputs="test_feature_photos",
+                name="extract_testing_features"
             ),
             node(
                 func=create_dataset,
@@ -61,7 +67,7 @@ def create_pipeline(**kwargs):
     validation_pipeline_template = Pipeline([ node(
                 func=predict_model,
                 inputs=[f"classifier",
-                        f"test_photos"
+                        f"test_feature_photos"
                         ],
                 outputs=f"pred_images",
                 name=f"predict_model",
@@ -208,6 +214,7 @@ def create_pipeline(**kwargs):
                     validation_pipeline_template,
                     inputs={
                         "classifier":f"{classifier_name}_{training_dataset}",
+                        "test_feature_photos":f"{testing_dataset}.test_feature_photos",
                         "test_photos":f"{testing_dataset}.test_photos",
                         "test_masks":f"{testing_dataset}.test_masks"
                     },
@@ -218,7 +225,7 @@ def create_pipeline(**kwargs):
                         f"params:result_plot_filename":result_plot_filename,
                         "params:threshold":"params:threshold"
                     },
-                    namespace=f"{training_dataset}_{testing_dataset}"
+                    namespace=f"{training_dataset}_{testing_dataset}_{classifier_name}"
                 )
                 validation_pipelines.append(validation_pipeline)
 
