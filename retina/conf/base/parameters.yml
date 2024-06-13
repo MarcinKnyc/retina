@@ -2,6 +2,8 @@
 debug: True
 output_path: "./data/02_output/"
 
+threshold: 0.5
+
 # stare:
 stare_name: "STARE"
 

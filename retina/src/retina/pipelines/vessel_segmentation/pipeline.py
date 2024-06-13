@@ -1,7 +1,7 @@
 from kedro.pipeline import Pipeline, node
 
 from .feature_extraction import create_dataset, extract_features
-from .models_and_predictions import predict_model, train_adaboost, train_knn, train_logitboost, undersampling
+from .models_and_predictions import predict_model, train_adaboost, train_knn, train_logitboost, undersampling, apply_threshold
 from .visualisation import plot_images, plot_results
 
 from .prepare import prepare_stare, prepare_drive, prepare_chasedb1
@@ -11,8 +11,8 @@ def create_pipeline(**kwargs):
 
     classifiers = (
         ("logitboost", train_logitboost),
-        ("knn", train_knn),
-        ("adaboost", train_adaboost)
+        #("knn", train_knn),
+        #("adaboost", train_adaboost)
         )
     datasets = (
             "drive",
@@ -61,16 +61,24 @@ def create_pipeline(**kwargs):
     validation_pipeline_template = Pipeline([ node(
                 func=predict_model,
                 inputs=[f"classifier",
-                        f"test_photos",
-                        f"test_masks"],
+                        f"test_photos"
+                        ],
                 outputs=f"pred_images",
                 name=f"predict_model",
+            ),
+            node( func = apply_threshold, 
+                inputs=[
+                    "pred_images",
+                    "params:threshold"
+                ],
+                outputs="thresh_images",
+                name="thresholding"
             ),
             node(
                 func=plot_results,
                 inputs=[f"test_photos",
                         f"test_masks",
-                        f"pred_images",
+                        f"thresh_images",
                         f"params:result_plot_title",
                         "params:output_path",
                         f"params:result_plot_filename"],
@@ -148,10 +156,7 @@ def create_pipeline(**kwargs):
         parameters={ 
             "params:drive_path":"params:drive_path",
             "params:debug":"params:debug",
-            #f"params:result_plot_title":
-            #f"params:drive_result_{classifier_name}_plot_title",
             "params:output_path":"params:drive_output_path",
-            #f"params:result_plot_filename":f"params:drive_result_{classifier_name}_plot_filename",
             "params:image_plot_title":"params:drive_image_plot_title",
             "params:image_plot_filename":"params:drive_image_plot_filename"
             },
@@ -210,7 +215,8 @@ def create_pipeline(**kwargs):
                         f"params:result_plot_title":
                         result_plot_title,
                         "params:output_path":f"params:{testing_dataset}_output_path",
-                        f"params:result_plot_filename":result_plot_filename
+                        f"params:result_plot_filename":result_plot_filename,
+                        "params:threshold":"params:threshold"
                     },
                     namespace=f"{training_dataset}_{testing_dataset}"
                 )
