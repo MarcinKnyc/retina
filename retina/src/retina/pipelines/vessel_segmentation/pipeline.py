@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node
 
-from .feature_extraction import create_dataset
+from .feature_extraction import create_dataset, extract_features
 from .models_and_predictions import predict_model, train_adaboost, train_knn, train_logitboost, undersampling
 from .visualisation import plot_images, plot_results
 
@@ -32,9 +32,15 @@ def create_pipeline(**kwargs):
                 outputs=None,
                 name=f"plot_STARE",
             ),
+            node( 
+                func=extract_features,
+                inputs="train_photos",
+                outputs="train_feature_photos",
+                name="extract_features"
+            ),
             node(
                 func=create_dataset,
-                inputs=[f"train_photos",
+                inputs=[f"train_feature_photos",
                         f"train_masks"],
                 outputs=[f"train_features",
                         f"train_labels"],

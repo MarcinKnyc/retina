@@ -68,16 +68,23 @@ def gabor_filter_responses(image):
                 (sigma*6, sigma*6), sigma, theta_rad, 10.0, 0.5, 0, ktype=cv2.CV_64F)
             gabor_features.append(cv2.filter2D(
                 image, cv2.CV_64F, gabor_kernel))
+
+    # import code
+    # code.interact(local=locals())
     return np.stack(gabor_features, axis=-1).max(axis=-1)
 
+def extract_features( photos ):
+    feature_photos = []
+    for photo in tqdm(photos, total=len(photos), desc='Extracting features'):
+        feature_vector = create_feature_vector(photo)
+        feature_photos.append(feature_vector)
+    
+    return feature_photos
 
-def create_dataset(photos: list, masks: list) -> tuple:
-    """Creates a dataset by extracting patches and features from images."""
+def create_dataset( features, masks ):
     ds_photos = []
     ds_masks = []
-
-    for photo, mask in tqdm(list(zip(photos, masks)), total=len(photos), desc='Processing photos and their masks'):
-        feature_vector = create_feature_vector(photo)
+    for feature_vector,mask in zip(features,masks):
         height, width, num_features = feature_vector.shape
         # Flatten the features
         flattened_features = feature_vector.reshape(-1, num_features)

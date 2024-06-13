@@ -4,7 +4,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from logitboost import LogitBoost
 from sklearn.tree import DecisionTreeRegressor
-from .feature_extraction import create_dataset
+from .feature_extraction import extract_features
 import code
 
 
@@ -68,7 +68,10 @@ def predict_model(classifier, test_photos: List[np.ndarray], test_masks: List[np
 
     y_pred_images = []
     for photo, mask in zip(test_photos, test_masks):
-        test_features, _ = create_dataset([photo], [mask])
+        feature_vector = extract_features([photo])[0]
+        height, width, num_features = feature_vector.shape
+        # Flatten the features
+        test_features = feature_vector.reshape(-1, num_features)
         
         y_pred = (classifier.predict_proba(test_features)[:, 1] > threshold) *255
 
