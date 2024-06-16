@@ -2,8 +2,14 @@ from tqdm import tqdm
 import cv2
 import numpy as np
 
-from skimage.measure import moments_central, moments_hu, moments_normalized
-from skimage.util import view_as_windows
+from scipy.ndimage import maximum_filter, uniform_filter
+
+
+def image_rotate(image, angle):
+    size = image.shape[1::-1]
+    image_center = tuple(np.array(size) / 2)
+    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+    return cv2.warpAffine(image, rot_mat, size)
 
 
 def create_feature_vector(image):
@@ -67,12 +73,6 @@ def compute_gradient_orientation(image):
 
 
 def morphological_top_hat(image):
-    def rotate(image, angle):
-        size = image.shape[1::-1]
-        image_center = tuple(np.array(size) / 2)
-        rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-        return cv2.warpAffine(image, rot_mat, size)
-
     se_length = 21
     se = cv2.getStructuringElement(cv2.MORPH_RECT, (se_length, 1))
     se = cv2.copyMakeBorder(
@@ -80,23 +80,30 @@ def morphological_top_hat(image):
 
     top_hat = []
     for angle in range(0, 180, 22):
-        rotated_se = rotate(se, angle)
+        rotated_se = image_rotate(se, angle)
         top_hat.append(cv2.morphologyEx(image, cv2.MORPH_TOPHAT, rotated_se))
 
     return cv2.normalize(sum(top_hat), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
 
 
 def line_strength(image):
-    lines = np.zeros_like(image, dtype=np.float64)
-    se_length = 15
+    line_length = 2
+    line = cv2.getStructuringElement(cv2.MORPH_RECT, (line_length, 1))
+    line = cv2.copyMakeBorder(
+        line, line_length//2, line_length//2, 0, 0, cv2.BORDER_CONSTANT, 0)
 
+    line_strength = np.zeros_like(image, dtype=np.float64)
     for angle in range(0, 180, 15):
-        se = cv2.getStructuringElement(cv2.MORPH_RECT, (se_length, 1))
-        rotated_se = cv2.warpAffine(se, cv2.getRotationMatrix2D(
-            (se_length//2, 0), angle, 1), (se_length, se_length))
-        lines = np.maximum(lines, cv2.filter2D(image, cv2.CV_64F, rotated_se))
+        line = cv2.getStructuringElement(cv2.MORPH_RECT, (line_length, 1))
 
-    return lines
+        filtered_image = cv2.filter2D(image, -1, image_rotate(line, angle))
+
+        max_filtered = maximum_filter(filtered_image, size=line_length)
+        mean_filtered = uniform_filter(filtered_image, size=line_length)
+
+        line_strength = np.maximum(line_strength, max_filtered - mean_filtered)
+
+    return cv2.normalize(line_strength, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
 
 
 def gabor_filter_responses(image):
