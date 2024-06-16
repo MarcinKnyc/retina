@@ -63,10 +63,7 @@ def compute_gradient_orientation(image):
 
         goa += D
 
-    goa = cv2.normalize(goa, None, 0, 255, cv2.NORM_MINMAX)
-    goa = goa.astype(np.uint8)
-
-    return goa
+    return cv2.normalize(goa, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
 
 
 def morphological_top_hat(image):
@@ -86,7 +83,7 @@ def morphological_top_hat(image):
         rotated_se = rotate(se, angle)
         top_hat.append(cv2.morphologyEx(image, cv2.MORPH_TOPHAT, rotated_se))
 
-    return sum(top_hat)
+    return cv2.normalize(sum(top_hat), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
 
 
 def line_strength(image):
@@ -104,7 +101,9 @@ def line_strength(image):
 
 def gabor_filter_responses(image):
     final_features = []
+
     for sigma in (2, 3, 4, 5):
+
         gabor_features = []
         for theta in range(0, 180, 10):
             theta_rad = theta * np.pi / 180
@@ -112,7 +111,12 @@ def gabor_filter_responses(image):
                 (sigma*6, sigma*6), sigma, theta_rad, 10.0, 0.5, 0, ktype=cv2.CV_64F)
             gabor_features.append(cv2.filter2D(
                 image, cv2.CV_64F, gabor_kernel))
-        final_features.append(np.stack(gabor_features, axis=-1).max(axis=-1))
+
+        gabor_features = np.stack(gabor_features, axis=-1).max(axis=-1)
+        gabor_features = cv2.normalize(
+            gabor_features, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+
+        final_features.append(gabor_features)
 
     return final_features
 
