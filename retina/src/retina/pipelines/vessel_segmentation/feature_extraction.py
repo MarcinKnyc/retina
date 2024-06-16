@@ -29,12 +29,44 @@ def create_feature_vector(image):
 
 
 def compute_gradient_orientation(image):
-    gx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
-    gy = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
-    magnitude = np.sqrt(gx**2 + gy**2)
-    ux = np.divide(gx, magnitude, out=np.zeros_like(gx), where=magnitude != 0)
-    uy = np.divide(gy, magnitude, out=np.zeros_like(gy), where=magnitude != 0)
-    return np.arctan2(uy, ux)
+    threshold = 3 / 255.0
+
+    kx = np.array([[1, 0, -1],
+                   [2, 0, -2],
+                   [1, 0, -1]])
+    ky = np.array([[1, 2, 1],
+                   [0, 0, 0],
+                   [-1, -2, -1]])
+
+    goa = np.zeros_like(image, dtype=np.float64)
+
+    for sigma in [np.sqrt(2), 2 * np.sqrt(2), 4]:
+        smoothed_image = cv2.GaussianBlur(image, (0, 0), sigma)
+
+        gx = cv2.Sobel(smoothed_image, cv2.CV_64F, 1, 0, ksize=3)
+        gy = cv2.Sobel(smoothed_image, cv2.CV_64F, 0, 1, ksize=3)
+
+        magnitude = np.sqrt(gx**2 + gy**2)
+
+        ux = np.divide(gx, magnitude, where=magnitude != 0)
+        uy = np.divide(gy, magnitude, where=magnitude != 0)
+
+        ux[magnitude < threshold] = 0
+        uy[magnitude < threshold] = 0
+
+        dxx = cv2.filter2D(ux, -1, kx)
+        dxy = cv2.filter2D(ux, -1, ky)
+        dyx = cv2.filter2D(uy, -1, kx)
+        dyy = cv2.filter2D(uy, -1, ky)
+
+        D = dxx**2 + dxy**2 + dyx**2 + dyy**2
+
+        goa += D
+
+    goa = cv2.normalize(goa, None, 0, 255, cv2.NORM_MINMAX)
+    goa = goa.astype(np.uint8)
+
+    return goa
 
 
 def morphological_top_hat(image):
