@@ -94,8 +94,6 @@ def line_strength(image):
 
     line_strength = np.zeros_like(image, dtype=np.float64)
     for angle in range(0, 180, 15):
-        line = cv2.getStructuringElement(cv2.MORPH_RECT, (line_length, 1))
-
         filtered_image = cv2.filter2D(image, -1, image_rotate(line, angle))
 
         max_filtered = maximum_filter(filtered_image, size=line_length)
