@@ -17,9 +17,9 @@ def create_feature_vector(image):
     inverted_green = cv2.bitwise_not(green_channel)
 
     grad_orientation = compute_gradient_orientation(green_channel)
-    morph_transformation = morphological_top_hat(green_channel)
+    morph_transformation = morphological_top_hat(inverted_green)
     line_strength_1 = line_strength(green_channel)
-    line_strength_2 = line_strength(cv2.bitwise_not(green_channel))
+    line_strength_2 = line_strength(inverted_green)
     gabor_response = gabor_filter_responses(inverted_green)
 
     features = np.stack([
@@ -87,22 +87,23 @@ def morphological_top_hat(image):
 
 
 def line_strength(image):
-    line_length = 2
+    line_length = 21
     line = cv2.getStructuringElement(cv2.MORPH_RECT, (line_length, 1))
     line = cv2.copyMakeBorder(
         line, line_length//2, line_length//2, 0, 0, cv2.BORDER_CONSTANT, 0)
 
-    line_strength = np.zeros_like(image, dtype=np.float64)
+    max_line = np.zeros_like(image, dtype=np.float64)
+    mean_filtered = uniform_filter(image, size=3)
     for angle in range(0, 180, 15):
-        filtered_image = cv2.filter2D(image, -1, image_rotate(line, angle))
-
-        max_filtered = maximum_filter(filtered_image, size=line_length)
-        mean_filtered = uniform_filter(filtered_image, size=line_length)
-
-        line_strength = np.maximum(line_strength, max_filtered - mean_filtered)
+        filter_2D = image_rotate(line, angle)
+        filter_2D = filter_2D/filter_2D.sum()
+        filtered_image = cv2.filter2D(image, -1, filter_2D)
+        
+        max_line = np.maximum(max_line, filtered_image)
+        
+    line_strength = abs(max_line - mean_filtered)
 
     return cv2.normalize(line_strength, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
-
 
 def gabor_filter_responses(image):
     final_features = []
