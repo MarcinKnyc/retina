@@ -2,7 +2,7 @@ from kedro.pipeline import Pipeline, node
 
 from .feature_extraction import create_dataset, extract_features
 from .models_and_predictions import predict_model, train_adaboost, train_knn, train_logitboost, undersampling, apply_threshold
-from .visualisation import plot_images, plot_results
+from .visualisation import plot_images, plot_results, plot_features
 
 from .prepare import prepare_stare, prepare_drive, prepare_chasedb1
 from kedro.pipeline.modular_pipeline import pipeline
@@ -12,7 +12,7 @@ def create_pipeline(**kwargs):
     classifiers = (
         ("logitboost", train_logitboost),
         ("knn", train_knn),
-        ("adaboost", train_adaboost)
+        ("adaboost", train_adaboost),
         )
     datasets = (
             "drive",
@@ -30,13 +30,20 @@ def create_pipeline(**kwargs):
                         "params:output_path",
                         "params:image_plot_filename"],
                 outputs=None,
-                name=f"plot_STARE",
+                name=f"plot_images",
             ),
             node( 
                 func=extract_features,
                 inputs="train_photos",
                 outputs="train_feature_photos",
                 name="extract_training_features"
+            ),
+            node(
+                func = plot_features,
+                inputs = ["train_feature_photos", 
+                    "params:output_path"],
+                outputs = None,
+                name="plot_features"
             ),
             node( 
                 func=extract_features,
@@ -46,7 +53,8 @@ def create_pipeline(**kwargs):
             ),
             node(
                 func=create_dataset,
-                inputs=[f"train_feature_photos",
+                inputs=["train_photos",
+                        f"train_feature_photos",
                         f"train_masks"],
                 outputs=[f"train_features",
                         f"train_labels"],
@@ -55,7 +63,8 @@ def create_pipeline(**kwargs):
             node(
                 func=undersampling,
                 inputs=[f"train_features",
-                        f"train_labels"],
+                        f"train_labels",
+                        "params:sample_size"],
                 outputs=[f"train_features_under",
                         f"train_labels_under"],
                 name=f"undersampling",
@@ -67,7 +76,8 @@ def create_pipeline(**kwargs):
     validation_pipeline_template = Pipeline([ node(
                 func=predict_model,
                 inputs=[f"classifier",
-                        f"test_feature_photos"
+                        f"test_feature_photos",
+                        "test_photos"
                         ],
                 outputs=f"pred_images",
                 name=f"predict_model",
@@ -84,7 +94,8 @@ def create_pipeline(**kwargs):
                 func=plot_results,
                 inputs=[f"test_photos",
                         f"test_masks",
-                        f"thresh_images",
+                        "thresh_images",
+                        f"pred_images",
                         f"params:result_plot_title",
                         "params:output_path",
                         f"params:result_plot_filename"],
@@ -115,7 +126,8 @@ def create_pipeline(**kwargs):
             "params:debug":"params:debug",
             "params:output_path":"params:stare_output_path",
             "params:image_plot_title":"params:stare_image_plot_title",
-            "params:image_plot_filename":"params:stare_image_plot_filename"
+            "params:image_plot_filename":"params:stare_image_plot_filename",
+            "params:sample_size":"params:stare_sample_size"
             },
         namespace = "stare"
     )
@@ -140,7 +152,8 @@ def create_pipeline(**kwargs):
             "params:debug":"params:debug",
             "params:output_path":"params:chasedb1_output_path",
             "params:image_plot_title":"params:chasedb1_image_plot_title",
-            "params:image_plot_filename":"params:chasedb1_image_plot_filename"
+            "params:image_plot_filename":"params:chasedb1_image_plot_filename",
+            "params:sample_size":"params:chasedb1_sample_size"
             },
         namespace = "chasedb1"
     )
@@ -164,7 +177,8 @@ def create_pipeline(**kwargs):
             "params:debug":"params:debug",
             "params:output_path":"params:drive_output_path",
             "params:image_plot_title":"params:drive_image_plot_title",
-            "params:image_plot_filename":"params:drive_image_plot_filename"
+            "params:image_plot_filename":"params:drive_image_plot_filename",
+            "params:sample_size":"params:drive_sample_size"
             },
         namespace = "drive"
     )

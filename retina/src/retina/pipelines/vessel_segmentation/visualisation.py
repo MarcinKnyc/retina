@@ -4,6 +4,8 @@ import numpy as np
 
 from .metrics import get_quality
 
+import cv2
+
 
 def normalize(img):
     if img.max() > 1.0:  # Normalize if max value is greater than 1
@@ -27,28 +29,43 @@ def plot_images(train_raw_photos, train_masks, title: str, output_path: str, fil
         plt.tight_layout()
     save_plot(output_path, filename)
 
+def plot_features( train_feature_photos, output_path ):
+    for k, feature_vector in enumerate(train_feature_photos):
+        feature_vector[:, :, 0] = cv2.bitwise_not(feature_vector[:,:,0])
+        plt.figure( figsize=(27,10) )
+        for i in range(9):
+            plt.subplot(3, 3, i+1)
+            plt.imshow( feature_vector[:, :, i], cmap='gray' )
+        
+        save_plot(output_path+"/features", f"feature_{k}.png")
 
-def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, name: str, output_path: str, filename: str,  figsize=(27, 10), n=10):
+def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, y_nonthresh_images, name: str, output_path: str, filename: str,  figsize=(27, 10), n=10):
     """Plots the results along with accuracy, sensitivity, and specificity metrics, and saves the plot to a file."""
     def gtapm():
         plt.figure(figsize=figsize)
         plt.suptitle(name, fontsize=20)
         for i in range(n):
-            plt.subplot(3, 10, i + 1)
+            plt.subplot(4, 10, i + 1)
             img = normalize(test_raw_photos[i].astype(np.float32))
             plt.imshow(img, cmap='gray')
             plt.axis('off')
             plt.title('Photo')
-            plt.subplot(3, 10, i + 11)
+            plt.subplot(4, 10, i + 11)
             mask = normalize(test_masks[i].astype(np.float32))
             plt.imshow(mask, cmap='gray')
             plt.axis('off')
             plt.title('Ground truth')
-            plt.subplot(3, 10, i + 21)
+            plt.subplot(4, 10, i + 21)
+            pred = normalize(y_nonthresh_images[i].astype(np.float32))
+            plt.imshow(pred, cmap='gray')
+            plt.axis('off')
+            plt.title('Probability')
+            plt.tight_layout()
+            plt.subplot(4, 10, i + 31)
             pred = normalize(y_pred_images[i].astype(np.float32))
             plt.imshow(pred, cmap='gray')
             plt.axis('off')
-            plt.title('Mask')
+            plt.title('Thresholded')
             plt.tight_layout()
 
         save_plot(output_path, "gtamp_" + filename)
@@ -120,6 +137,8 @@ def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, name: s
 
 def save_plot(output_path: str, filename: str):
     """Utility function to save a plot."""
+    if not os.path.isdir(output_path):
+        os.mkdir(output_path)
     plt.tight_layout()
     print(os.path.join(output_path, filename))
     plt.savefig(os.path.join(output_path, filename), bbox_inches='tight')

@@ -1,8 +1,12 @@
 # common:
-debug: True
+debug: False
 output_path: "./data/02_output/"
 
-threshold: 0.5
+threshold: 0.55
+
+chasedb1_sample_size: 200000
+stare_sample_size: 75000
+drive_sample_size: 200000
 
 # stare:
 stare_name: "STARE"

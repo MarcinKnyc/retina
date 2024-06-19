@@ -15,8 +15,9 @@ def image_rotate(image, angle):
 def create_feature_vector(image):
     green_channel = image[:, :, 1]
     inverted_green = cv2.bitwise_not(green_channel)
+    grayscale = cv2.cvtColor( image, cv2.COLOR_RGB2GRAY )
 
-    grad_orientation = compute_gradient_orientation(green_channel)
+    grad_orientation = compute_gradient_orientation(grayscale)
     morph_transformation = morphological_top_hat(inverted_green)
     line_strength_1 = line_strength(green_channel)
     line_strength_2 = line_strength(inverted_green)
@@ -35,7 +36,7 @@ def create_feature_vector(image):
 
 
 def compute_gradient_orientation(image):
-    threshold = 3 / 255.0
+    threshold = 3 /255.0
 
     kx = np.array([[1, 0, -1],
                    [2, 0, -2],
@@ -46,24 +47,28 @@ def compute_gradient_orientation(image):
 
     goa = np.zeros_like(image, dtype=np.float64)
 
+    kernel_size = 31
     for sigma in [np.sqrt(2), 2 * np.sqrt(2), 4]:
-        smoothed_image = cv2.GaussianBlur(image, (0, 0), sigma)
+        smoothed_image = cv2.GaussianBlur(image, (kernel_size, kernel_size), sigma)
 
-        gx = cv2.Sobel(smoothed_image, cv2.CV_64F, 1, 0, ksize=3)
-        gy = cv2.Sobel(smoothed_image, cv2.CV_64F, 0, 1, ksize=3)
+        gx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kernel_size, scale = sigma)
+        gy = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=kernel_size, scale = sigma)
 
         magnitude = np.sqrt(gx**2 + gy**2)
 
         ux = np.divide(gx, magnitude, where=magnitude != 0)
         uy = np.divide(gy, magnitude, where=magnitude != 0)
 
+        magnitude = np.sqrt(ux**2 + uy**2)
+
         ux[magnitude < threshold] = 0
         uy[magnitude < threshold] = 0
 
-        dxx = cv2.filter2D(ux, -1, kx)
-        dxy = cv2.filter2D(ux, -1, ky)
-        dyx = cv2.filter2D(uy, -1, kx)
-        dyy = cv2.filter2D(uy, -1, ky)
+        dxx = cv2.Sobel(ux, cv2.CV_64F, 1, 0, ksize=kernel_size, scale=sigma)
+        dxy = cv2.Sobel(ux, cv2.CV_64F, 0, 1, ksize=kernel_size, scale=sigma)
+
+        dyx = cv2.Sobel(uy, cv2.CV_64F, 1, 0, ksize=kernel_size, scale=sigma)
+        dyy = cv2.Sobel(uy, cv2.CV_64F, 0, 1, ksize=kernel_size, scale=sigma)
 
         D = dxx**2 + dxy**2 + dyx**2 + dyy**2
 
@@ -112,11 +117,11 @@ def gabor_filter_responses(image):
 
         gabor_features = []
         for theta in range(0, 180, 10):
-            theta_rad = theta * np.pi / 180
             gabor_kernel = cv2.getGaborKernel(
-                (sigma*6, sigma*6), sigma, theta_rad, 10.0, 0.5, 0, ktype=cv2.CV_64F)
-            gabor_features.append(cv2.filter2D(
-                image, cv2.CV_64F, gabor_kernel))
+                (20*sigma, 20*sigma), sigma, theta, 8, 0.5, 0, ktype=cv2.CV_64F)
+            gabor_features.append(abs(cv2.filter2D(
+                image, cv2.CV_64F, gabor_kernel)))
+
 
         gabor_features = np.stack(gabor_features, axis=-1).max(axis=-1)
         gabor_features = cv2.normalize(
@@ -136,15 +141,17 @@ def extract_features(photos):
     return feature_photos
 
 
-def create_dataset(features, masks):
+def create_dataset(photos, features, masks):
     ds_photos = []
     ds_masks = []
-    for feature_vector, mask in zip(features, masks):
+    for photo, feature_vector, mask in zip(photos, features, masks):
         _, _, num_features = feature_vector.shape
         # Flatten the features
-        flattened_features = feature_vector.reshape(-1, num_features)
+        #flattened_features = feature_vector.reshape(-1, num_features)
+        roi = cv2.cvtColor( photo, cv2.COLOR_RGB2GRAY ) > 0.1*255
+        flattened_features = feature_vector[roi]
         ds_photos.append(flattened_features)
-        ds_masks.append(mask.flatten())  # Flatten the mask
+        ds_masks.append(mask[roi])  # Flatten the mask
 
     ds_photos = np.vstack(ds_photos)
     ds_masks = np.hstack(ds_masks)
