@@ -29,15 +29,33 @@ def plot_images(train_raw_photos, train_masks, title: str, output_path: str, fil
         plt.tight_layout()
     save_plot(output_path, filename)
 
-def plot_features( train_feature_photos, output_path ):
+
+def plot_features(train_feature_photos, output_path):
+    # This is bad, but will do
+    names = [
+        'GOA',
+        'Top-hat',
+        'Line strength 1',
+        'Line strength 2',
+        'Gabor, sigma = 2',
+        'Gabor, sigma = 3',
+        'Gabor, sigma = 4',
+        'Gabor, sigma = 5',
+        'Inverted green channel',
+    ]
+
     for k, feature_vector in enumerate(train_feature_photos):
-        feature_vector[:, :, 0] = cv2.bitwise_not(feature_vector[:,:,0])
-        plt.figure( figsize=(27,10) )
-        for i in range(9):
-            plt.subplot(3, 3, i+1)
-            plt.imshow( feature_vector[:, :, i], cmap='gray' )
-        
-        save_plot(output_path+"/features", f"feature_{k}.png")
+        feature_vector[:, :, 0] = cv2.bitwise_not(feature_vector[:, :, 0])
+        plt.figure(figsize=(10, 10))
+        plt.axis('off')
+        for i, name in enumerate(names):
+            ax = plt.subplot(3, 3, i + 1)
+            ax.axis('off')
+            ax.set_title(name, fontsize=20)
+            ax.imshow(feature_vector[:, :, i], cmap='gray')
+
+        save_plot(output_path + "/features", f"feature_{k}.png")
+
 
 def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, y_nonthresh_images, name: str, output_path: str, filename: str,  figsize=(27, 10), n=10):
     """Plots the results along with accuracy, sensitivity, and specificity metrics, and saves the plot to a file."""
