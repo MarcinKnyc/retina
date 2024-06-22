@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from .metrics import get_quality
+from .models_and_predictions import apply_threshold
 
 import cv2
 
@@ -57,7 +58,7 @@ def plot_features(train_feature_photos, output_path):
         save_plot(output_path + "/features", f"feature_{k}.png")
 
 
-def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, y_nonthresh_images, name: str, output_path: str, filename: str,  figsize=(27, 10), n=10):
+def plot_results(test_raw_photos: list, test_masks: list, threshold, y_nonthresh_images, name: str, output_path: str, filename: str,  figsize=(27, 10), n=10):
     """Plots the results along with accuracy, sensitivity, and specificity metrics, and saves the plot to a file."""
     def gtapm():
         plt.figure(figsize=figsize)
@@ -80,7 +81,8 @@ def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, y_nonth
             plt.title('Probability')
             plt.tight_layout()
             plt.subplot(4, 10, i + 31)
-            pred = normalize(y_pred_images[i].astype(np.float32))
+            pred = normalize(apply_threshold(y_nonthresh_images, threshold)
+                             [i].astype(np.float32))
             plt.imshow(pred, cmap='gray')
             plt.axis('off')
             plt.title('Thresholded')
@@ -143,7 +145,7 @@ def plot_results(test_raw_photos: list, test_masks: list, y_pred_images, y_nonth
         save_plot(output_path, "table_" + filename)
 
     quality = get_quality(
-        test_masks, y_pred_images)
+        test_masks, y_nonthresh_images, threshold)
 
     if n > len(test_raw_photos):
         n = len(test_raw_photos)

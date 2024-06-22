@@ -82,19 +82,11 @@ def create_pipeline(**kwargs):
                 outputs=f"pred_images",
                 name=f"predict_model",
             ),
-            node( func = apply_threshold, 
-                inputs=[
-                    "pred_images",
-                    "params:threshold"
-                ],
-                outputs="thresh_images",
-                name="thresholding"
-            ),
             node(
                 func=plot_results,
                 inputs=[f"test_photos",
                         f"test_masks",
-                        "thresh_images",
+                        "params:threshold",
                         f"pred_images",
                         f"params:result_plot_title",
                         "params:output_path",
