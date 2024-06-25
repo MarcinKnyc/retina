@@ -36,23 +36,14 @@ def create_feature_vector(image):
 
 
 def compute_gradient_orientation(image):
-    threshold = 3 /255.0
-
-    kx = np.array([[1, 0, -1],
-                   [2, 0, -2],
-                   [1, 0, -1]])
-    ky = np.array([[1, 2, 1],
-                   [0, 0, 0],
-                   [-1, -2, -1]])
+    threshold = 3 / 255.0
 
     goa = np.zeros_like(image, dtype=np.float64)
 
     kernel_size = 31
     for sigma in [np.sqrt(2), 2 * np.sqrt(2), 4]:
-        smoothed_image = cv2.GaussianBlur(image, (kernel_size, kernel_size), sigma)
-
-        gx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kernel_size, scale = sigma)
-        gy = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=kernel_size, scale = sigma)
+        gx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=kernel_size, scale=sigma)
+        gy = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=kernel_size, scale=sigma)
 
         magnitude = np.sqrt(gx**2 + gy**2)
 
